@@ -1,5 +1,5 @@
 {
-  "name": "TestingApp",
+  "name": "TmgB2bxBridge",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.21.0",
+    "@react-native-community/datetimepicker": "^7.6.2",
     "@react-native-firebase/app": "^18.7.3",
+    "@react-native-firebase/messaging": "^18.7.3",
+    "@react-navigation/drawer": "^6.6.6",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
     "@rneui/base": "^4.0.0-rc.7",
@@ -19,10 +22,26 @@
     "axios": "^1.6.2",
     "react": "18.2.0",
     "react-native": "0.73.1",
+    "react-native-blob-util": "^0.19.6",
+    "react-native-document-picker": "^9.1.0",
+    "react-native-element-dropdown": "^2.10.1",
+    "react-native-file-viewer": "^2.1.5",
+    "react-native-fs": "^2.20.0",
+    "react-native-gesture-handler": "^2.14.0",
     "react-native-loading-spinner-overlay": "^3.0.1",
+    "react-native-modal-datetime-picker": "^17.1.0",
+    "react-native-openanything": "^0.0.6",
+    "react-native-pdf": "^6.7.4",
+    "react-native-permissions": "^4.0.4",
+    "react-native-push-notification": "^8.1.1",
+    "react-native-reanimated": "^3.6.1",
+    "react-native-rename": "^3.2.13",
+    "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^4.8.2",
     "react-native-screens": "^3.29.0",
-    "react-native-vector-icons": "^10.0.3"
+    "react-native-vector-icons": "^10.0.3",
+    "react-pdf": "^7.7.0",
+    "rn-fetch-blob": "^0.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

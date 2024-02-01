@@ -1,23 +1,53 @@
-import React, {useContext, useState} from 'react';
-import { View, Image, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, Image, TextInput, TouchableOpacity, Text, StyleSheet, BackHandler } from 'react-native';
 import { Button } from '@rneui/themed';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {AuthContext} from '../context/AuthContext';
+import { AuthContext } from './context/AuthContext';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { COLORS, FONTSIZE } from './theme/themes';
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [userid, setUserid] = useState('');
   const [password, setPassword] = useState('');
-  const {isLoading, login} = useContext(AuthContext);
-  
+  const [error, setError] = useState('');
+  const { isLoading, login } = useContext(AuthContext);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    return () => {
+      backHandler.remove();
+    };
+  }, []);
+
+  const handleBackPress = () => {
+    // Handle hardware back press here
+    BackHandler.exitApp();
+    return true; // Return true to prevent default behavior (closing the app)
+  };
+
+  const handleLogin = () => {
+    // Check if email and password are not empty
+    if (!userid.trim() || !password.trim()) {
+      setError('Please enter both email and password.');
+      return;
+    }
+
+    // Clear previous error message
+    setError('');
+
+    // Call the login function
+    login(userid, password);
+  };
+
   return (
     <View style={styles.container}>
-    <Spinner visible={isLoading} />
+      <Spinner visible={isLoading} />
       {/* Upper 30% - White background with logo and app name */}
       <View style={styles.upperContainer}>
-        <Image source={require("./assets/Logo.jpg")} style={styles.logo} />
-        <Text style={styles.appName}>xBridge B2B Portal</Text>
+        <Image source={require("./assets/TMG_LOGO.jpg")} style={styles.logo} />
+        <Text style={styles.appName}>TMG B2B Portal</Text>
       </View>
 
       {/* Lower 70% - Dark grey background with email, password inputs, and sign-in button */}
@@ -30,7 +60,7 @@ const LoginScreen = () => {
             value={userid}
             keyboardType="email-address"
             autoCapitalize="none"
-            onChangeText={text => setUserid(text)}
+            onChangeText={(text) => setUserid(text)}
           />
         </View>
 
@@ -41,23 +71,23 @@ const LoginScreen = () => {
             placeholder="Password"
             secureTextEntry={!showPassword}
             value={password}
-            onChangeText={text => setPassword(text)}
+            onChangeText={(text) => setPassword(text)}
           />
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}
-            style={{marginLeft: 10, marginRight: 10}}>
-              <Icon name={showPassword ? 'eye-off' : 'eye'} size={20} color="black" />
+            style={{ marginLeft: 10, marginRight: 10 }}>
+            <Icon name={showPassword ? 'eye-off' : 'eye'} size={20} color="black" />
           </TouchableOpacity>
         </View>
-          <Button
-            title="Sign In"
-            onPress={() => {
-              login(userid, password);
-            }}
-          />
 
-        {/* Forgot password link */}
-        <Text style={styles.forgotPasswordText}>Forgot password? Click here</Text>
+        {/* Display error message if any */}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+        <Button title="Sign In" onPress={handleLogin} />
+
+        <TouchableOpacity  onPress={() => navigation.navigate('ForgotPasswordScreen')}>
+          <Text style={styles.forgotPasswordText}>Forgot password? Click here</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -105,6 +135,13 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 10,
+  },
+  errorText: {
+    color: '#ff3014',
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize:FONTSIZE.size_16,
   },
   forgotPasswordText: {
     color: 'white',
