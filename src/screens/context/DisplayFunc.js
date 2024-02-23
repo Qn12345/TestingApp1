@@ -168,6 +168,8 @@ export const DisplayProvider = ({children}) => {
   //display pdf document
   const displayPdf = async (typeName,refno,status,pdncn) => {
     setIsLoading(true);
+    const customer_guid = '833DF49D303711EE857842010A940003';
+    const user_guid = await AsyncStorage.getItem('user_guid');
     if (pdncn === '' ||pdncn === undefined)
     {
       pdncn = 'DEBIT';
@@ -181,12 +183,12 @@ export const DisplayProvider = ({children}) => {
     axios
       .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info',{
         type:typeName,
-        customer_guid: '833DF49D303711EE857842010A940003',
-        user_guid: await AsyncStorage.getItem('user_guid'),
+        customer_guid,
+        user_guid,
         refno,
         pdncn,
       })
-      .then(response => {
+      .then(async (response) => {
         //console.log(response.data);
         if (response.data === '') {
           Alert.alert('No Data');
@@ -195,37 +197,54 @@ export const DisplayProvider = ({children}) => {
         else {
           if (typeName === 'PO')
           {
-            navigation.navigate('DisplayPoPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:response.data.file_path,status:status});
+            let pdfDoc = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/po_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+            navigation.navigate('DisplayPoPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status });
             setIsLoading(false);
           }
           else if (typeName === 'GRN')
           {
-            navigation.navigate('DisplayGRNPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:response.data.file_path,status:status});
-            setIsLoading(false);
+            let pdfDoc = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/gr_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+ 
+            if(response.data.grda_filename !== '' || response.data.grda_header !== null)
+            {
+              let pdfDocGrda = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/grda_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+              navigation.navigate('DisplayGRNPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status, file_path_grda:pdfDocGrda});
+              setIsLoading(false);
+            }
+            else
+            {
+              navigation.navigate('DisplayGRNPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status});
+              setIsLoading(false);
+            }
           }
           else if (typeName === 'GRDA')
           {
-            navigation.navigate('DisplayGRDAPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:response.data.file_path,status:status});
+            let pdfDoc = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/grda_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+            navigation.navigate('DisplayGRDAPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status});
             setIsLoading(false);
           }
           else if (typeName === 'PRDNCN')
           {
-            navigation.navigate('DisplayPRDNCNPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:response.data.file_path,status:status});
+            let pdfDoc = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/prdncn_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}&pdncn=${pdncn}`;
+            navigation.navigate('DisplayPRDNCNPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status});
             setIsLoading(false);
           }
           else if (typeName === 'PDNCN')
           {
-            navigation.navigate('DisplayPDNCNPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:response.data.file_path,status:status});
+            let pdfDoc = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/pdncn_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+            navigation.navigate('DisplayPDNCNPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status});
             setIsLoading(false);
           }
           else if (typeName === 'PCI')
           {
-            navigation.navigate('DisplayPCIPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:response.data.file_path,status:status});
+            let pdfDoc = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/pci_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+            navigation.navigate('DisplayPCIPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status});
             setIsLoading(false);
           }
           else if (typeName === 'DI')
           {
-            navigation.navigate('DisplayDIPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:response.data.file_path,status:status});
+            let pdfDoc = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/di_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+            navigation.navigate('DisplayDIPdf', { PdfData: response.data, typeName:typeName, refno:refno, file_path:pdfDoc,status:status});
             setIsLoading(false);
           }
         }
@@ -248,7 +267,7 @@ export const DisplayProvider = ({children}) => {
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',
       },);
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    //if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       try {
           const {config,fs} = RNFetchBlob;
           const downloadPath = fs.dirs.DownloadDir;
@@ -257,8 +276,8 @@ export const DisplayProvider = ({children}) => {
           const configOptions = Platform.select({
             /*ios: {
               fileCache: true,
-              path: imagePath,
-              appendExt: filename.split('.').pop(),
+              path: downloadDest,
+              appendExt: file_name.split('.').pop(),
             },*/
             android: {
               fileCache: true,
@@ -273,7 +292,7 @@ export const DisplayProvider = ({children}) => {
               },
             },
           });
-          const response = await RNFetchBlob.config(configOptions).fetch('GET', source.uri);
+          const response = await RNFetchBlob.config(configOptions).fetch('GET', source);
           showAlertBoxDownload('Document Downloaded');
         } catch (error) {
         console.error('Error during download:', error);
@@ -284,9 +303,9 @@ export const DisplayProvider = ({children}) => {
             message: 'An error occurred during file download.',
         });
         }
-    } else {
-      Alert.alert('Please Allow Access to Storage !');
-    }
+    //} else {
+    //  Alert.alert('Please Allow Access to Storage !');
+    //}
 };
 
   const displayTrigger = () => {

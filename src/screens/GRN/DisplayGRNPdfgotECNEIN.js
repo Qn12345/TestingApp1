@@ -1,37 +1,77 @@
 import React, { useContext, useState, useRef } from 'react';
 import Pdf from 'react-native-pdf';
-import { View, Text, StyleSheet, TouchableOpacity ,Modal,FlatList,TouchableWithoutFeedback} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,TextInput ,Modal,FlatList,ScrollView, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, FONTFAMILY, FONTSIZE } from '../theme/themes';
 import Spinner from 'react-native-loading-spinner-overlay';
 import PublicHeader from '../components/PublicHeader';
 import {DisplayFunc} from '../context/DisplayFunc';
 import withAuth from '../withAuth';
-import { Tab, TabView,Overlay,Divider} from '@rneui/themed';
+import { Tab, TabView,Overlay,Divider,ListItem} from '@rneui/themed';
+import ConfirmationModal from '../components/ConfirmationModal';
+import { GRNFunc } from './GRNFunc';
 
 const DisplayGRNPdf = ({route,navigation}) => {
     const {isLoading, handleDownload} = useContext(DisplayFunc);
-    //const { refNo } = route.params;
+    const {update_einvno,update_ecn} = useContext(GRNFunc);
     const refNo = route.params?.refno || '';
     const typeName = route.params?.typeName || '';
     const file_path = route.params?.file_path || '';
+    const file_pathGRDA = route.params?.file_path_grda || '';
     const file_name = route.params?.PdfData.file_name || '';
     const file_nameGRDA = route.params?.PdfData.grda_filename || '';
+    const grn_header = route.params?.PdfData.grn_header || [];
+    const grda_header = route.params?.PdfData.grda_header || [];
     const status = route.params?.status || '';
     const [index, setIndex] = React.useState(0);
     const [indexM, setIndexM] = React.useState(0);
-    const [indexMGRDA, setIndexMGRDA] = React.useState(0);
     const [isVisibleModal, setisVisibleModal] = useState(false);
-    const [isVisibleModalNetUnit, setisVisibleModalNetUnit] = useState(false);
-    const GRDA_FName = file_nameGRDA.split("/").pop();
+    const [isVisibleModalNetUnit, setisVisibleModalNetUnit] = useState(null);
     const flatListRef = useRef();
     const itemList = route.params?.PdfData.rb_child || [];
     const keyExtractor = (item, index) => index.toString();
+    const [modalItem, setModalItem] = useState(null);
+    const [ConfirmationGenerate, setComfirmationGenerate] = useState(false);
+    const [expandedItems, setExpandedItems] = useState([]);
+    const [eInvoiceNo, setEInvoiceNo] = useState(grn_header[0]?.InvNo);
+    const [originalEInvoiceNo, setOriginalEInvoiceNo] = useState(grn_header[0]?.einvno);
+    const [showUpdateButton, setShowUpdateButton] = useState(false);
 
-    const source = {uri:'https://www.africau.edu/images/default/sample.pdf'};
-    const sourceGRDA = {uri:'https://www.africau.edu/images/default/sample.pdf'};
-    //const source = { uri: `https://tunasmanja.xbridge.my/index.php/B2b_gr/gr_report?refno=${refNo}`};
-    //const sourceGRDA = { uri: `https://tunasmanja.xbridge.my/index.php/B2b_gr/grda_report?refno=${refNo}`};
+    const handleEInvoiceNoChange = (newValue) => {
+      // Trim leading and trailing spaces
+      const trimmedValue = newValue.trim();
+      setEInvoiceNo(trimmedValue);
+      if (trimmedValue !== originalEInvoiceNo) {
+        setShowUpdateButton(true);
+      } else {
+        setShowUpdateButton(false);
+      }
+    };
+
+    const [ecnValues, setEcnValues] = useState(grda_header.map(item => item.ext_doc1));
+    const [originalEcnValues, setOriginalEcnValues] = useState(grda_header.map(item => item.ext_doc1));
+    const [isDirty, setIsDirty] = useState(Array(grda_header.length).fill(false));
+  
+    const handleEcnChange = (index, newValue) => {
+      const updatedEcnValues = [...ecnValues];
+      updatedEcnValues[index] = newValue.trim();
+      setEcnValues(updatedEcnValues);
+      setIsDirty(prevState => {
+        const updatedState = [...prevState];
+        updatedState[index] = newValue.trim() !== originalEcnValues[index];
+        return updatedState;
+      });
+    };
+    const sourceGRDA = {uri:file_pathGRDA};
+    const source = {uri:file_path};
+
+    const toggleExpanded = (indexE) => {
+      if (expandedItems.includes(indexE)) {
+        setExpandedItems(expandedItems.filter((item) => item !== indexE));
+      } else {
+        setExpandedItems([...expandedItems, indexE]);
+      }
+    };
 
     const renderItem = ({ item, index }) => (
       <TouchableOpacity
@@ -54,7 +94,8 @@ const DisplayGRNPdf = ({route,navigation}) => {
                 <View style={[styles.last,{flexDirection:'row', alignContent:'center'}]}>
                   <Text style={styles.label}>Net Unit Price: </Text>
                   <TouchableOpacity style={{position:'absolute',left:'26%'}} onPress={() => {
-                      setisVisibleModalNetUnit(true);
+                      setModalItem(item);
+                      setisVisibleModalNetUnit(index);
                     }}>
                     <Icon name="information-circle-outline" size={20} color='black'/>
                   </TouchableOpacity>
@@ -83,7 +124,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
 
                 <View style={styles.last}>
                   <Text style={styles.label}>Tax: </Text>
-                  <Text>{item.gst_tax_amount || 'N/A'}</Text>
+                  <Text style={styles.label}>{item.gst_tax_amount || 'N/A'}</Text>
 
                 </View>
                   <Divider width={1.5} color={COLORS.LightGrey} style={{marginVertical:3,width:'100%'}}/>
@@ -91,32 +132,33 @@ const DisplayGRNPdf = ({route,navigation}) => {
                   <Text style={styles.label}>Total Amount Incl Tax: </Text>
                   <Text style={{color:'black', fontSize:FONTSIZE.size_14, fontWeight:'bold'}}>RM {parseFloat(item.totalprice).toFixed(2) || 'N/A'}</Text>
                 </View>
-                <Overlay
-                isVisible={isVisibleModalNetUnit}
-                onBackdropPress={setisVisibleModalNetUnit}
-              >
-              <View style={styles.NetUnitContent}>
-                  <Text style={{color:'black', fontSize:FONTSIZE.size_18, fontWeight:'bold',textAlign:'center'}}>Net Unit Price Info</Text>
-                  <Divider width={1} color='grey' style={{ marginVertical: 10 }} />
-                  <View style={styles.last}>
-                    <Text style={styles.label}>Unit Price Before Disc: </Text>
-                    <Text style={styles.label}>RM {parseFloat(item.unitprice).toFixed(2) || 'N/A'}</Text>
+
+                  <Overlay
+                  isVisible={isVisibleModalNetUnit === index}
+                  onBackdropPress={() => setisVisibleModalNetUnit(null)}
+                  >
+                  <View style={styles.NetUnitContent}>
+                      <Text style={{color:'black', fontSize:FONTSIZE.size_18, fontWeight:'bold',textAlign:'center'}}>Net Unit Price Info</Text>
+                      <Divider width={1} color='grey' style={{ marginVertical: 10 }} />
+                      <View style={styles.last}>
+                        <Text style={styles.label}>Unit Price Before Disc: </Text>
+                        <Text style={styles.label}>RM {parseFloat(modalItem?.unitprice).toFixed(2) || 'N/A'}</Text>
+                      </View>
+                      <View style={styles.last}>
+                        <Text style={styles.label}>Item Discount Amount: </Text>
+                        <Text style={styles.label}>RM {parseFloat(modalItem?.discamt).toFixed(2) || 'N/A'}</Text>
+                      </View>
+                      <View style={styles.last}>
+                        <Text style={styles.label}>Total Bill Disc Prorated Disc: </Text>
+                        <Text style={styles.label}>RM {parseFloat(modalItem?.unit_disc_prorate).toFixed(2) || 'N/A'}</Text>
+                      </View>
+                      <Divider width={1} color='grey' style={{ marginVertical: 10 }} />
+                      <View style={styles.last}>
+                        <Text style={styles.label}>Unit Price After Disc: </Text>
+                        <Text style={styles.label}>RM {parseFloat(modalItem?.netunitprice).toFixed(2) || 'N/A'}</Text>
+                      </View>
                   </View>
-                  <View style={styles.last}>
-                    <Text style={styles.label}>Item Discount Amount: </Text>
-                    <Text style={styles.label}>RM {parseFloat(item.discamt).toFixed(2) || 'N/A'}</Text>
-                  </View>
-                  <View style={styles.last}>
-                    <Text style={styles.label}>Total Bill Disc Prorated Disc: </Text>
-                    <Text style={styles.label}>RM {parseFloat(item.unit_disc_prorate).toFixed(2) || 'N/A'}</Text>
-                  </View>
-                  <Divider width={1} color='grey' style={{ marginVertical: 10 }} />
-                  <View style={styles.last}>
-                    <Text style={styles.label}>Unit Price After Disc: </Text>
-                    <Text style={styles.label}>RM {parseFloat(item.netunitprice).toFixed(2) || 'N/A'}</Text>
-                  </View>
-              </View>
-              </Overlay>
+                </Overlay>
               </View>
 
             </TouchableOpacity>
@@ -127,7 +169,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
         <View style={styles.container}>
           <Spinner visible={isLoading} />
           <PublicHeader title={`${typeName}: ${refNo}`} />
-          {(file_nameGRDA !== '') ? (
+          {(file_nameGRDA !== '' || grda_header.length !== 0) ? (
             <>
             <Tab
               value={index}
@@ -174,7 +216,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
                   </>
                 )}
 
-                <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(source, file_name); }}>
+                <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(file_path, file_name); }}>
                   <Icon name="download" size={25} color={COLORS.White} />
                 </TouchableOpacity>
               </View>
@@ -188,7 +230,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
                   console.log(`Current page: ${page}`);
                 }}
                 onError={(error) => {
-                  console.log(error);
+                  Alert.alert('Fail to Load PDF. Please Try to Open Again or Call Support.');
                 }}
                 onPressLink={(uri) => {
                   console.log(`Link pressed: ${uri}`);
@@ -202,7 +244,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
                 <View style={styles.container2}>
                   {(status === 'NEW' || status === 'Viewed' || status === 'Printed' || status === '') && (
                     <>
-                      <TouchableOpacity style={[styles.TopBtn,{backgroundColor:COLORS.Blue}]} onPress={() => { }}>
+                      <TouchableOpacity style={[styles.TopBtn,{backgroundColor:COLORS.Blue}]} onPress={() => { setisVisibleModal(true); }}>
                         <Icon name="pencil" size={25} color={COLORS.White} />
                         <Text style={styles.buttonText}>Generate E-Invoice</Text>
                       </TouchableOpacity>
@@ -223,7 +265,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
                     </>
                   )}
 
-                  <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(source, file_nameGRDA); }}>
+                  <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(file_pathGRDA, file_nameGRDA); }}>
                     <Icon name="download" size={25} color={COLORS.White} />
                   </TouchableOpacity>
                 </View>
@@ -237,7 +279,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
                     console.log(`Current page: ${page}`);
                   }}
                   onError={(error) => {
-                    console.log(error);
+                    Alert.alert('Fail to Load PDF. Please Try to Open Again or Call Support.');
                   }}
                   onPressLink={(uri) => {
                     console.log(`Link pressed: ${uri}`);
@@ -275,7 +317,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
               </>
             )}
 
-            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(source, file_name); }}>
+            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(file_path, file_name); }}>
               <Icon name="download" size={25} color={COLORS.White} />
             </TouchableOpacity>
           </View>
@@ -289,7 +331,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
               console.log(`Current page: ${page}`);
             }}
             onError={(error) => {
-              console.log(error);
+              Alert.alert('Fail to Load PDF. Please Try to Open Again or Call Support.');
             }}
             onPressLink={(uri) => {
               console.log(`Link pressed: ${uri}`);
@@ -317,7 +359,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
                 onChange={(e) => setIndexM(e)}
                 indicatorStyle={{
                   backgroundColor: 'white',
-                  height: 3,
+                  height: 2,
               }}
               variant="primary"
               >
@@ -325,6 +367,11 @@ const DisplayGRNPdf = ({route,navigation}) => {
                 title="Item Detail"
                 titleStyle={{ fontSize: 14, fontWeight:'bold'  }}
               />
+              {(file_nameGRDA !== '' || grda_header.length !== 0) && (
+              <Tab.Item
+                title="GRDA Detail"
+                titleStyle={{ fontSize: 14, fontWeight:'bold' }}
+                />)}
               <Tab.Item
                 title="Generate E Invoice"
                 titleStyle={{ fontSize: 14, fontWeight:'bold' }}
@@ -334,7 +381,7 @@ const DisplayGRNPdf = ({route,navigation}) => {
               <TabView.Item style={{ backgroundColor:COLORS.White, width: '100%' }}>
                 <View style={styles.detailsContainer}>
                   <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={()=>{ }} style={styles.cancelButton}>
+                    <TouchableOpacity onPress={() => { if(file_nameGRDA !== '' || grda_header.length !== 0){setIndexM(2)}else{setIndexM(1)}; }} style={styles.cancelButton}>
                       <Icon name="arrow-forward" size={23} color='white'style={{paddingRight:10,}} />
                       <Text style={styles.buttonText}>To Generate E-Invoice</Text>
                     </TouchableOpacity>
@@ -347,15 +394,221 @@ const DisplayGRNPdf = ({route,navigation}) => {
                   />
                 </View>
               </TabView.Item>
-
+              {(file_nameGRDA !== '' || grda_header.length !== 0) && (
+                <TabView.Item style={{ backgroundColor:COLORS.White, width: '100%' }}>
+                <ScrollView>
+                {grda_header.map((item, index) => (
+                  <ListItem.Accordion
+                    key={index}
+                    content={
+                      <ListItem.Content>
+                        <ListItem.Title>
+                          <View style={{flexDirection:'row',alignContent:'center'}}>
+                            <Icon name="document-text" size={23} color='grey'style={{paddingRight:15}} />
+                            <Text style={{color:COLORS.Black,fontSize:FONTSIZE.size_16}}>GRDA: {item.RefNo} - {item.transtype}</Text>
+                          </View>
+                        </ListItem.Title>
+                      </ListItem.Content>
+                    }
+                    isExpanded={expandedItems.includes(index)}
+                    onPress={() => {
+                      toggleExpanded(index);
+                    }}
+                  >
+                  {expandedItems.includes(index) && (
+                  <View style={styles.GInvForm}>
+                    <View style={{padding:3, width:'99%'}}>
+                    <Text style={{ color:'black' }}>GRDA DN Refno</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={`${item.RefNo} - ${item.transtype}`}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Supplier CN No</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={item.sup_cn_no}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Supplier CN Date</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={item.sup_cn_date}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Amount Exc Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={item.VarianceAmt}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={item.gst_tax_sum}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Amount Incl Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={item.VarianceAmt}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>E-CN No:</Text>
+                      <TextInput
+                        style={styles.inputBlueBoxEdit}
+                        value={ecnValues[index]}
+                        onChangeText={(newValue) => handleEcnChange(index, newValue)}
+                        editable={true}
+                      />
+                      <Text style={{ color:'black' }}>E-CN Date:</Text>
+                      <TextInput
+                        style={styles.inputBlueBox}
+                        value={item.ext_date1}
+                        editable={false}
+                      />
+                      <View style={styles.buttonContainerGenerate}>
+                        {isDirty[index] && (
+                          <TouchableOpacity onPress={() => { update_ecn(item.RefNo,item.transtype,ecnValues[index]); setIsDirty[index](false); }} style={styles.cancelButton}>
+                            <Icon name="cloud-upload" size={23} color='white' style={{ paddingRight: 10 }} />
+                            <Text style={styles.buttonText}>Update</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                  )}
+                  </ListItem.Accordion>
+                  ))}
+                </ScrollView>
+              </TabView.Item>
+              )}
               <TabView.Item style={{ backgroundColor:COLORS.White, width: '100%' }}>
-              
+                <ScrollView>
+                  <View style={styles.GInvForm}>
+                    <View style={styles.GInvLeft}>
+                    <Text style={{ color:'black' }}>Supplier Invoice No</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.InvNo}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Supplier Delivery Order No</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.DONo}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Supplier Inv/Do Date</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.DocDate}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Amount Exc Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.e_inv_total_excl_tax}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.gst_tax_sum}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Amount Inc Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.total_include_tax}
+                      editable={false}
+                    />
+                    </View>
+
+                    <Divider width={1} orientation="vertical" color='grey' style={{ marginHorizontal:3}} />
+                    
+                    <View style={styles.GInvRight}>
+                    <Text style={{ color:'black' }}>GRN Supplier Copy</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.cross_ref}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>GRN Refno</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.RefNo}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>GRN Date</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.GRDate}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Amount Exc Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.e_inv_total_excl_tax}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.gst_tax_sum_inv}
+                      editable={false}
+                    />
+                    <Text style={{ color:'black' }}>Amount Inc Tax</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={grn_header[0]?.total_include_tax}
+                      editable={false}
+                    />
+                    </View>
+
+                    <View>
+                      <Text style={{ color:'black' }}>E-Invoice No:</Text>
+                      <TextInput
+                        style={styles.inputBlueBoxEdit}
+                        value={eInvoiceNo}
+                        onChangeText={handleEInvoiceNoChange}
+                        editable={true}
+                      />
+                      <Text style={{ color:'black' }}>E-Invoice Date:</Text>
+                      <TextInput
+                        style={styles.inputBlueBox}
+                        value={grn_header[0]?.einv_date}
+                        editable={false}
+                      />
+                      <View style={styles.buttonContainerGenerate}>
+                        {showUpdateButton && (
+                          <TouchableOpacity onPress={() => { update_einvno(eInvoiceNo,grn_header[0]?.einv_date,grn_header[0]?.RefNo); setShowUpdateButton(false); }} style={styles.cancelButton}>
+                            <Icon name="cloud-upload" size={23} color='white'style={{paddingRight:10,}} />
+                            <Text style={styles.buttonText}>Update</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                      <View style={styles.buttonContainerGenerate}>
+                        <TouchableOpacity onPress={() => { setComfirmationGenerate(); }} style={styles.cancelButton}>
+                          <Icon name="sync" size={23} color='white'style={{paddingRight:10,}} />
+                          <Text style={styles.buttonText}>Generate E-Invoice & E-CN</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </ScrollView>
               </TabView.Item>
             </TabView>
           </View>
           </View>
           </Modal>
 
+          <ConfirmationModal
+            isVisible={ConfirmationGenerate}
+            message={`Comfirmation for Generate E-Invoice & E-CN`}
+            onConfirm={() => {}}
+            onCancel={() => {setComfirmationGenerate(false);}}
+          />
           
         </View>
       );
@@ -465,7 +718,7 @@ const styles = StyleSheet.create({
       height:50,
       width:'100%',
       marginVertical:5,
-      color:'#73737a',
+      color:'#5a5d63',
       paddingLeft:10,
     },
     label: {
@@ -514,6 +767,46 @@ const styles = StyleSheet.create({
       backgroundColor: COLORS.White,
       width:'80%',
       padding:8,
+    },
+    GInvForm:{
+      padding:8,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    GInvLeft:{
+      padding:3,
+      width:'49%',
+    },
+    GInvRight:{
+      padding:3,
+      width:'49%',
+    },
+    buttonContainerGenerate:{
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginVertical:4,
+    },
+    inputBlueBox:{
+      borderWidth:1,
+      borderRadius:10,
+      backgroundColor: COLORS.White,
+      borderColor:COLORS.Blue,
+      height:50,
+      width:'100%',
+      marginVertical:5,
+      color:'#5a5d63',
+      paddingLeft:10,
+    },
+    inputBlueBoxEdit:{
+      borderWidth:1,
+      borderRadius:10,
+      backgroundColor: COLORS.White,
+      borderColor:COLORS.Blue,
+      height:50,
+      width:'100%',
+      marginVertical:5,
+      color:COLORS.Black,
+      paddingLeft:10,
     },
 });
 

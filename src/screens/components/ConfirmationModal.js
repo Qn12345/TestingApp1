@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.poppins_regular,
     marginBottom: 20,
+    color:COLORS.Black,
   },
   buttonContainer: {
     flexDirection: 'row',

@@ -41,7 +41,7 @@ const Sidebar = ({ onClose }) => {
     <View style={styles.container}>
     <ScrollView style={styles.scroll}>
         <View style={styles.containerUp}>
-          <Icons name="user-circle" size={60}/>
+          <Icons name="user-circle" size={60} color='grey'/>
         </View>
       <Divider width={2} />
       <View style={styles.containerDown}>
@@ -62,7 +62,7 @@ const Sidebar = ({ onClose }) => {
 */}
         <TouchableOpacity style={styles.item} disabled onPress={handleChangePassword}>
           <IconIonicons name="location-sharp" size={20} color='grey' />
-          <Text style={styles.itemText}>TMG Mart</Text>
+          <Text style={styles.itemText}>Tunas Manja Group</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.item} onPress={() => { getOutletD();}}>
@@ -80,7 +80,7 @@ const Sidebar = ({ onClose }) => {
           content={
             <View style={styles.itemList}>
               <Icons name="user" size={20} color='grey' />
-              <Text style={styles.itemText}>Supplier CheckList</Text>
+              <Text style={styles.itemText}>Admin Setup</Text>
             </View>
           }
           isExpanded={expanded}

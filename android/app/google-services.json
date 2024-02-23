@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "228924747605",
-    "project_id": "tmgb2bxbridge",
-    "storage_bucket": "tmgb2bxbridge.appspot.com"
+    "project_number": "662736984787",
+    "project_id": "tmg-b2b-xbridge",
+    "storage_bucket": "tmg-b2b-xbridge.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:228924747605:android:bb1e1eace8d09256b989dc",
+        "mobilesdk_app_id": "1:662736984787:android:eb59408edfb938d8af1226",
         "android_client_info": {
           "package_name": "com.Tmgb2bxBridgeapp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC1KL72BBpKe5gCe4qCraY3yhShnJIKl14"
+          "current_key": "AIzaSyBIxlfYmxDNWZL_VqjjwBBZpr0TZsR-4bk"
         }
       ],
       "services": {

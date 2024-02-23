@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import Pdf from 'react-native-pdf';
-import { View, Text, StyleSheet, TouchableOpacity,Linking} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,Linking, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, FONTFAMILY, FONTSIZE } from '../theme/themes';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -31,7 +31,7 @@ const DisplayPCIPdf = ({route,navigation}) => {
           <PublicHeader title={`${typeName}: ${refNo}`} />
           <View style={styles.container2}> 
 
-            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(source, file_name); }}>
+            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(file_path, file_name); }}>
               <Icon name="download" size={25} color={COLORS.White} />
             </TouchableOpacity>
           </View>
@@ -45,7 +45,7 @@ const DisplayPCIPdf = ({route,navigation}) => {
               console.log(`Current page: ${page}`);
             }}
             onError={(error) => {
-              console.log(error);
+              Alert.alert('Fail to Load PDF. Please Try to Open Again or Call Support.');
             }}
             onPressLink={(uri) => {
               console.log(`Link pressed: ${uri}`);

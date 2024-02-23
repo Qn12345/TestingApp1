@@ -3,9 +3,6 @@ import React, {createContext, useState,useContext} from 'react';
 import { useNavigation,StackActions  } from '@react-navigation/native';
 import { Alert,View,Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNFS from 'react-native-fs';
-import PushNotification from 'react-native-push-notification';
-import FileViewer from "react-native-file-viewer";
 import {DisplayFunc} from '../context/DisplayFunc';
 
 export const PdfAction = createContext();
@@ -100,7 +97,7 @@ export const PdfActionProvider = ({children}) => {
     setIsLoading(true);
     let location = await AsyncStorage.getItem('location');
     let ishq = await AsyncStorage.getItem('ishq');
-    axios
+    axios  //http://office.panda-eco.com:18243/rest_b2b/index.php/lite_b2b/Doc_info
       .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/reject',{
         type:typeName,
         customer_guid: '833DF49D303711EE857842010A940003',
@@ -117,7 +114,7 @@ export const PdfActionProvider = ({children}) => {
         else {
           if (typeName === 'PO')
           {
-            Alert.alert(response.data.message);
+            Alert.alert(response.data.title,response.data.message);
             refno = '';
             displayDoc(location,ishq,typeName,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier);
             setIsLoading(false);

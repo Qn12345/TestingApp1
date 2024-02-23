@@ -15,14 +15,13 @@ import ConfirmationModal from '../components/ConfirmationModal';
 
 const B2BReminderRetailer = ({ navigation }) => {
   const { isLoading } = useContext(BasicFunc);
-  const { b2b_reminder_byRetailer_Update,b2b_reminder_byRetailer_Delete } = useContext(GeneralFunc);
+  const { b2b_reminder_byRetailer_Update } = useContext(GeneralFunc);
   const route = useRoute();
   const ReminderDataRetailer = route.params?.ReminderDataRetailer?.result || [];
   const ReminderDataType = route.params?.ReminderDataRetailer?.type_list || [];
   const flatListRef = useRef();
   const [isVisible, setIsVisible] = useState(false);
   const [isConfirmationVisibleReminder, setIsConfirmationVisibleReminder] = useState(false);
-  const [isConfirmationVisibleReminderDelete, setIsConfirmationVisibleReminderDelete] = useState(false);
   const [isVisibleEdit, setIsVisibleEdit] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
   const [isUpdateButtonDisabled, setIsUpdateButtonDisabled] = useState(true);
@@ -115,10 +114,6 @@ const B2BReminderRetailer = ({ navigation }) => {
           <Icons name="pen" size={23} color='grey' style={{paddingRight:20,}}/>
           <Text style={{color:COLORS.Black,fontSize:FONTSIZE.size_16}}>Edit</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.Delete} onPress={() => {setIsConfirmationVisibleReminderDelete(true);}}>
-          <Icons name="trash" size={23} color='grey'style={{paddingRight:20,}} />
-          <Text style={{color:COLORS.Black,fontSize:FONTSIZE.size_16}}>Delete</Text>
-        </TouchableOpacity>
       </View>
       </Overlay>
 
@@ -181,11 +176,13 @@ const B2BReminderRetailer = ({ navigation }) => {
             <Dropdown
               style={styles.chooseType}
               selectedTextStyle={{color:COLORS.Black}}
+              placeholderStyle={{color:COLORS.Black}}
               labelField="label"
               valueField="value"
               placeholder={'Choose your type'}
               data={generateTypeOptions()}
               value={selectedType}
+              itemTextStyle={{color:COLORS.Black}}
               onChange={(value) => {
                                     setSelectedType(value);
                                     setIsUpdateButtonDisabled(!value); // Enable the button if a type is selected
@@ -221,13 +218,6 @@ const B2BReminderRetailer = ({ navigation }) => {
         message={`Are you sure you want to Update?`}
         onConfirm={() => {b2b_reminder_byRetailer_Update(item.supplier_guid,item.customer_guid,item.DebtorCode,selectedType.value,item.table_name);}}
         onCancel={() => {setIsConfirmationVisibleReminder(false);}}
-      />
-
-      <ConfirmationModal
-        isVisible={isConfirmationVisibleReminderDelete}
-        message={`Are you sure you want to Delete?`}
-        onConfirm={() => {b2b_reminder_byRetailer_Delete(item.supplier_guid,item.supplier_name,item.DebtorCode);}}
-        onCancel={() => {setIsConfirmationVisibleReminderDelete(false);}}
       />
 
       </>
@@ -316,11 +306,6 @@ const styles = StyleSheet.create({
     paddingVertical:20,
   },
   Edit:{
-    flexDirection:'row',
-    alignItems:'center',
-    margin:15,
-  },
-  Delete:{
     flexDirection:'row',
     alignItems:'center',
     margin:15,

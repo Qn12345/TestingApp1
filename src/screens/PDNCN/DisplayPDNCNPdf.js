@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import Pdf from 'react-native-pdf';
-import { View, Text, StyleSheet, TouchableOpacity,Linking} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,Linking, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, FONTFAMILY, FONTSIZE } from '../theme/themes';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -17,13 +17,7 @@ const DisplayPDNCNPdf = ({route,navigation}) => {
     const file_name = route.params?.PdfData.file_name || '';
     const status = route.params?.status || '';
 
-    // Find the index of "PANDA HYPERMARKET -"
-    const startIndex = file_path.indexOf("http://b2b.xbridge.my/uploads/panda_folder/");
-
-    // Extract the substring after "PANDA HYPERMARKET -"
-    const result = file_path.slice(startIndex + "http://b2b.xbridge.my/uploads/panda_folder/".length);
-
-    const source = { uri: `https://tunasmanja.xbridge.my/index.php/B2b_pdncn/pdncn_report?refno=${refNo}`};
+    const source = { uri: file_path};
 
       return (
         <View style={styles.container}>
@@ -31,7 +25,7 @@ const DisplayPDNCNPdf = ({route,navigation}) => {
           <PublicHeader title={`${typeName}: ${refNo}`} />
           <View style={styles.container2}> 
 
-            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(source, file_name); }}>
+            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(file_path, file_name); }}>
               <Icon name="download" size={25} color={COLORS.White} />
             </TouchableOpacity>
           </View>
@@ -45,7 +39,7 @@ const DisplayPDNCNPdf = ({route,navigation}) => {
               console.log(`Current page: ${page}`);
             }}
             onError={(error) => {
-              console.log(error);
+              Alert.alert('Fail to Load PDF. Please Try to Open Again or Call Support.');
             }}
             onPressLink={(uri) => {
               console.log(`Link pressed: ${uri}`);

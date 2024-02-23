@@ -126,6 +126,7 @@ const PCIFilterScreen = () => {
             containerStyle={styles.dropdownContainer}
             dropdownPosition={-4} // Adjust as needed
             onChange={(value) => setSelectedPeriodCode(value)}
+            itemTextStyle={{color:COLORS.Black}}
           />
         </View>
 

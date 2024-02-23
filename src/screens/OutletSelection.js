@@ -53,6 +53,7 @@ const OutletSelectionScreen = ({ navigation }) => {
           value={selectedOutlet}
           containerStyle={styles.containerOutlet}
           onChange={(value) => setSelectedOutlet(value)}
+          itemTextStyle={{color:COLORS.Black}}
         />
 
         <View style={styles.buttonContainer}>
@@ -117,12 +118,14 @@ const styles = StyleSheet.create({
     borderColor:COLORS.LightGrey,
     borderWidth:2,
     borderRadius:10,
+    color:COLORS.Black,
   },
   containerOutlet:{
     borderColor:COLORS.LightGrey,
     borderWidth:1,
     borderRadius:10,
     padding:5,
+    color:COLORS.Black,
   },
   chooseOutletWord:{
     color:COLORS.Black,

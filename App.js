@@ -11,7 +11,9 @@ import { DisplayProvider } from './src/screens/context/DisplayFunc';
 import { PdfActionProvider } from './src/screens/context/PdfAction';
 import { GeneralProvider } from './src/screens/context/GeneralFunc';
 import { ContactFuncProvider } from './src/screens/context/ContactFunc';
+import { GRNProvider } from './src/screens/GRN/GRNFunc';
 import withAuth from './src/screens/withAuth';
+import { TicketProvider } from './src/screens/tickets/TicketFunc';
 
 import LoginScreen from './src/screens/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -32,6 +34,7 @@ import TriggerScreen from './src/screens/Trigger/TriggerScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import B2BReminderScreen from './src/screens/B2BReminder/B2BReminderScreen';
 import B2BReminderRetailer from './src/screens/B2BReminder/B2BReminderRetailer';
+import OpenTicketScreen from './src/screens/tickets/OpenTicketScreen';
 
 import PoFilterScreen from './src/screens/Po/PoFilterScreen';
 import GRNFilterScreen from './src/screens/GRN/GRNFilterScreen';
@@ -69,12 +72,15 @@ function App() {
         <PdfActionProvider>
         <GeneralProvider>
         <ContactFuncProvider>
+        <TicketProvider>
+        <GRNProvider>
           <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="SplashScreen">
             <Stack.Screen name="SplashScreen" component={SplashScreen} />
             <Stack.Screen name="WelcomeScreen" component={withAuth(WelcomeScreen)} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="OutletSelectionScreen" component={withAuth(OutletSelectionScreen)} />
             <Stack.Screen name="ChangePasswordScreen" component={withAuth(ChangePasswordScreen)} />
+            <Stack.Screen name="OpenTicketScreen" component={withAuth(OpenTicketScreen)} />
             <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
             <Stack.Screen name="ContactScreen" component={withAuth(ContactScreen)} />
             <Stack.Screen name="HomeScreen" component={withAuth(HomeScreen)} />
@@ -104,6 +110,8 @@ function App() {
             <Stack.Screen name="DisplayPCIPdf" component={withAuth(DisplayPCIPdf)} />
             <Stack.Screen name="DisplayDIPdf" component={withAuth(DisplayDIPdf)} />
           </Stack.Navigator>
+          </GRNProvider>
+          </TicketProvider>
           </ContactFuncProvider>
           </GeneralProvider>
           </PdfActionProvider>

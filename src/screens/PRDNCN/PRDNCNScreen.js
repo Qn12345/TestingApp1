@@ -62,7 +62,7 @@ const PRDNCNScreen = ({ navigation }) => {
     <TouchableOpacity
             key={index}
             onPress={() => {
-              displayPdf(typeName, item.refno, item.status);
+              displayPdf(typeName, item.refno, item.status,item.doc_type);
             }}
             style={styles.item}
           >
@@ -97,7 +97,7 @@ const PRDNCNScreen = ({ navigation }) => {
               </View>
               </ListItem.Subtitle>
               <ListItem.Subtitle style={styles.totalPrice}>
-                RM {parseFloat(item.amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+                RM {item.amount}
               </ListItem.Subtitle>
             </ListItem.Content>
           </TouchableOpacity>

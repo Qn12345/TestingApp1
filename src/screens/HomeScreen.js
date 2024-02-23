@@ -9,9 +9,11 @@ import Icons from 'react-native-vector-icons/MaterialIcons';
 import {DisplayFunc} from './context/DisplayFunc';
 import { useRoute } from '@react-navigation/native';
 import withAuth from './withAuth';
+import { TicketFunc } from './tickets/TicketFunc';
 
 const HomeScreen = ({ navigation }) => {
   const {isLoading,displayDoc,displayTrigger} = useContext(DisplayFunc);
+  const {getOpenTicketInfo} = useContext(TicketFunc);
   const route = useRoute();
   const dashboardData = route.params?.dashboardData || [];
   const dateFrom = route.params?.dateFrom || '';
@@ -57,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.content}>Date View from <Text style={{fontWeight:'bold'}}> {dateFrom} </Text> to <Text style={{fontWeight:'bold'}}> {dateTo} </Text></Text>
         <Divider width={2} />
 
-        {/* Buttons Section */} 
+        {/* Buttons Section */}
         <View style={styles.buttonContainer}>
         {( dashboardData !== undefined || dashboardData !== null) && (
         <>
@@ -209,6 +211,16 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
       </ScrollView>
+      
+      <TouchableOpacity onPress={() => { getOpenTicketInfo(); }}>
+        <View style={{backgroundColor:COLORS.LightBlue,
+              width:70,position:'absolute',right:20,bottom:20,
+              borderRadius:100,borderWidth:1,borderColor:COLORS.LightBlue,
+              padding:20,}}>
+        <Icon name="pencil" size={28} color={COLORS.White}/>
+        </View>
+      </TouchableOpacity>
+      
     </View>
   );
 

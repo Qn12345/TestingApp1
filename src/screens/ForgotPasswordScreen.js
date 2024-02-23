@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     borderRadius:10,
     padding:10,
     marginVertical:5,
+    color:COLORS.Black,
   },
   ChangeButton:{
     backgroundColor:COLORS.LightBlue,

@@ -95,7 +95,7 @@ const PoScreen = ({ navigation }) => {
             />
           </ListItem.Subtitle>
           <ListItem.Subtitle style={styles.totalPrice}>
-            RM {parseFloat(item.amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+            RM {item.amount}
           </ListItem.Subtitle>
         </ListItem.Content>
       </TouchableOpacity>

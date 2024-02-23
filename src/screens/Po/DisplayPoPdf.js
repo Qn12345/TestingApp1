@@ -1,6 +1,6 @@
 import React, { useContext, useState,useEffect } from 'react';
 import Pdf from 'react-native-pdf';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, FONTFAMILY, FONTSIZE } from '../theme/themes';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -16,7 +16,7 @@ const DisplayPoPdf = ({route,navigation}) => {
     const {isConfirmationVisible,isConfirmationVisibleReject,handleCM,handleCancel,handleConfirm} = useContext(PdfAction);
     const refNo = route.params?.refno || '';
     const typeName = route.params?.typeName || '';
-    const file_path = route.params?.file_path || '';
+    const file_path = route.params?.file_path || [];
     const file_name = route.params?.PdfData.file_name || '';
     const accept_button = route.params?.PdfData.accept_button || '';
     const reject_button = route.params?.PdfData.reject_button || '';
@@ -36,13 +36,7 @@ const DisplayPoPdf = ({route,navigation}) => {
       return reasons;
     };
 
-    // Find the index of "PANDA HYPERMARKET -"
-    const startIndex = file_path.indexOf("https://file1.xbridge.my/uploads/tmg/PO_MRM01_");
-
-    // Extract the substring after "PANDA HYPERMARKET -"
-    const result = file_path.slice(startIndex + "http://b2b.xbridge.my/uploads/panda_folder/".length);
-
-    const source = { uri: `https://tunasmanja.xbridge.my/index.php/B2b_po/po_report?refno=${refNo}`};
+    const source = { uri: file_path };
 
       return (
         <View style={styles.container}>
@@ -85,6 +79,7 @@ const DisplayPoPdf = ({route,navigation}) => {
                     style={styles.chooseReason}
                     placeholderStyle={styles.chooseReasonWord}
                     selectedTextStyle={styles.chooseReasonWord}
+                    itemTextStyle={{color:COLORS.Black}}
                     labelField="label"
                     valueField="value"
                     placeholder={'Choose your reason'}
@@ -112,7 +107,7 @@ const DisplayPoPdf = ({route,navigation}) => {
               onCancel={() => { handleCancel('Reject'); }}
             />
 
-            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(source, file_name); }}>
+            <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(file_path, file_name); }}>
               <Icon name="download" size={25} color={COLORS.White} />
             </TouchableOpacity>
           </View>
@@ -126,6 +121,7 @@ const DisplayPoPdf = ({route,navigation}) => {
               console.log(`Current page: ${page}`);
             }}
             onError={(error) => {
+              Alert.alert('Fail to Load PDF. Please Try to Open Again or Call Support.');
               console.log(error);
             }}
             onPressLink={(uri) => {
@@ -244,6 +240,7 @@ const styles = StyleSheet.create({
       borderWidth:2,
       borderRadius:10,
       width:300,
+      color:COLORS.Black,
     },
     containerReason:{
       borderColor:COLORS.LightGrey,

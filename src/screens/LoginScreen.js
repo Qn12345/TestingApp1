@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     paddingHorizontal: 20,
+    color:COLORS.Black,
   },
   icon: {
     marginLeft: 10,
