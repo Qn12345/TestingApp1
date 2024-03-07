@@ -103,7 +103,7 @@ const B2BReminderRetailer = ({ navigation }) => {
 
       <Overlay
         isVisible={isVisible}
-        onBackdropPress={setIsVisible}
+        onBackdropPress={() => setIsVisible(false)}
         overlayStyle={styles.overlay}
       >
       <View style={styles.bottomS}>

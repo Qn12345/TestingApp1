@@ -19,7 +19,7 @@ const SPACING = {
     BlackRGB10: 'rgba(0,0,0,0.1)',
     Orange: '#f5b01b',
     OrangeRGBA0: 'rgba(255,85,36,0)',
-    LightGrey:'#bdc2c9',
+    LightGrey:'#a5a5a8',
     Grey: '#333333',
     TransGrey:'rgba(82, 79, 78, 0.5)',
     DarkGrey: '#0b0b0b',

@@ -112,6 +112,7 @@ const keyExtractor = (item, index) => index.toString();
       <View style={styles.searchBarContainer}>
         <SearchBar
           placeholder="Search Ref No..."
+          placeholderTextColor={COLORS.LightGrey}
           onChangeText={handleSearch}
           value={searchQuery}
           style={styles.searchBar}

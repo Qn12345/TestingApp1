@@ -13,7 +13,7 @@ import { useRoute } from '@react-navigation/native';
 import {DisplayFunc} from '../context/DisplayFunc';
 import withAuth from '../withAuth';
 
-const GRNFilterScreen = () => {
+const ConsignStatementFilter = () => {
   const { isLoading } = useContext(BasicFunc);
   const {displayDoc} = useContext(DisplayFunc);
   const route = useRoute();
@@ -21,23 +21,23 @@ const GRNFilterScreen = () => {
   const FilterDataPeriod = route.params?.FilterData?.period_code || [];
   const location = route.params?.location || '';
   const ishq = route.params?.ishq || '';
-  const [RefNo, setGRN] = useState('');
-  const [isGRNFocused, setIsGRNFocused] = useState(false);
-  const [GRNStatus, setGRNStatus] = useState([]);
-  const [GRNFromDate, setGRNFromDate] = useState('');
-  const [GRNToDate, setGRNToDate] = useState('');
-  const [GRNEFromDate, setGRNEFromDate] = useState('');
-  const [GRNEToDate, setGRNEToDate] = useState('');
+  const RefNo = '';
+  const [consignStatus, setconsignStatus] = useState([]);
+  const [ConsignFromDate, setConsignFromDate] = useState('');
+  const [consignToDate, setconsignToDate] = useState('');
   const [currentInput, setCurrentInput] = useState('');
   const [datePickerFor, setDatePickerFor] = useState('');
-  const [isGRNDatePickerVisible, setGRNDatePickerVisibility] = useState(false);
-  const [isGRNEDatePickerVisible, setGRNEDatePickerVisibility] = useState(false);
+  const [isConsignDatePickerVisible, setConsignDatePickerVisibility] = useState(false);
   const [selectedPeriodCode, setSelectedPeriodCode] = useState('');
-  const typeGRN = 'GRN';
+  const [selectedSupplierCode, setSelectedSupplierCode] = useState('');
+  const typeconsign = 'ConsignSS';
   const doc_type = ['all'];
   const limit = 100;
   const offset = 0;
-  const filter_supplier = '';
+  const filter_supplier = route.params?.FilterData?.filter_supplier || [];
+  const exp_from = '';
+  const exp_to = '';
+
   // Function to generate period code options
   const generatePeriodCodeOptions = () => {
     const options = [];
@@ -45,6 +45,18 @@ const GRNFilterScreen = () => {
       options.push({
         label: period_code.period_code,
         value: period_code.period_code,
+      });
+    });
+
+    return options;
+  };
+
+  const generateSupplierCodeOptions = () => {
+    const options = [];
+    filter_supplier.forEach((supplier_code) => {
+      options.push({
+        label: supplier_code.supplier_name,
+        value: supplier_code.supcus_code,
       });
     });
 
@@ -59,56 +71,41 @@ const GRNFilterScreen = () => {
   const showDatePicker = (input, pickerFor) => {
     setCurrentInput(input);
     setDatePickerFor(pickerFor);
-    if (pickerFor === 'GRN') {
-      setGRNDatePickerVisibility(true);
-    } else if (pickerFor === 'GRNE') {
-      setGRNEDatePickerVisibility(true);
+    if (pickerFor === 'consign') {
+      setConsignDatePickerVisibility(true);
     }
   };
 
   const hideDatePicker = () => {
-    setGRNDatePickerVisibility(false);
-    setGRNEDatePickerVisibility(false);
+    setConsignDatePickerVisibility(false);
   };
 
-  const handleConfirmGRN = (date) => {
+  const handleConfirmconsign = (date) => {
     hideDatePicker();
-    if (currentInput === 'from' && datePickerFor === 'GRN') {
-      setGRNFromDate(date.toISOString().split('T')[0]);
-    } else if (currentInput === 'to' && datePickerFor === 'GRN') {
-      setGRNToDate(date.toISOString().split('T')[0]);
-    }
-  };
-  
-  const handleConfirmGRNE = (date) => {
-    hideDatePicker();
-    if (currentInput === 'from' && datePickerFor === 'GRNE') {
-      setGRNEFromDate(date.toISOString().split('T')[0]);
-    } else if (currentInput === 'to' && datePickerFor === 'GRNE') {
-      setGRNEToDate(date.toISOString().split('T')[0]);
+    if (currentInput === 'from' && datePickerFor === 'consign') {
+      setConsignFromDate(date.toISOString().split('T')[0]);
+    } else if (currentInput === 'to' && datePickerFor === 'consign') {
+      setconsignToDate(date.toISOString().split('T')[0]);
     }
   };
 
   const togglestatusChip = (status) => {
-    setGRNStatus((prevGRNStatus) => {
-      const isSelected = prevGRNStatus.includes(status.code);
+    setconsignStatus((prevconsignStatus) => {
+      const isSelected = prevconsignStatus.includes(status.code);
       if (isSelected) {
-        return prevGRNStatus.filter((selectedStatus) => selectedStatus !== status.code);
+        return prevconsignStatus.filter((selectedStatus) => selectedStatus !== status.code);
       } else {
-        return [...prevGRNStatus, status.code];
+        return [...prevconsignStatus, status.code];
       }
     });
   };
 
   // Function to handle reset and apply actions
   const handleReset = () => {
-    setGRN('');
-    setIsGRNFocused(false);
-    setGRNStatus([]);
-    setGRNFromDate(null);
-    setGRNToDate(null);
-    setGRNEFromDate(null);
-    setGRNEToDate(null);
+    setconsignStatus([]);
+    setSelectedSupplierCode(null);
+    setConsignFromDate(null);
+    setconsignToDate(null);
     setSelectedPeriodCode(null);
   };
 
@@ -119,28 +116,17 @@ const GRNFilterScreen = () => {
       {/* Main content */}
       <ScrollView style={styles.scroll}>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>GRN#</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {marginTop:5},
-              { borderColor: isGRNFocused ? COLORS.LightGrey : COLORS.LightBlue },
-            ]}
-            value={RefNo}
-            onChangeText={(text) => setGRN(text)}
-            onFocus={() => setIsGRNFocused(true)}
-            onBlur={() => setIsGRNFocused(false)}
-          />
+          <Text style={styles.label}>Consignment Sales Statement#</Text>
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>GRN Status:</Text>
+          <Text style={styles.label}>Status:</Text>
           <View style={styles.chipsContainer}>
             {statuss.map((status) => (
                 <Chip
                 containerStyle={styles.Schip}
                 key={status.code}
-                type={GRNStatus.includes(status.code) ? 'solid' : 'outline'}
+                type={consignStatus.includes(status.code) ? 'solid' : 'outline'}
                 onPress={() => togglestatusChip(status)}>
                 <Text style={styles.ChipWord}>{status.reason}</Text>
                 </Chip>
@@ -149,48 +135,30 @@ const GRNFilterScreen = () => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>GRN Date Range</Text>
-          <View style={styles.dateRangeContainer}>
-            <TouchableOpacity onPress={() => showDatePicker('from', 'GRN')} style={styles.datePickerInputO}>
-            <TextInput
-              style={styles.datePickerInput}
-              value={GRNFromDate ? GRNFromDate : ''}
-              editable={false}
-              placeholder='Date From'
-              placeholderTextColor={COLORS.LightGrey}
-            />
-            </TouchableOpacity>
-            <Icon
-              name="remove-outline"
-              size={30}
-              color={'black'}
-              style={{ marginTop: 15 }}
-            />
-            <TouchableOpacity onPress={() => showDatePicker('to', 'GRN')} style={styles.datePickerInputO}>
-            <TextInput
-              style={styles.datePickerInput}
-              value={GRNToDate ? GRNToDate : ''}
-              editable={false}
-              placeholder='Date To'
-              placeholderTextColor={COLORS.LightGrey}
-            />
-            </TouchableOpacity>
-          </View>
-          <DateTimePickerModal
-            isVisible={isGRNDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirmGRN}
-            onCancel={hideDatePicker}
+          <Text style={styles.label}>Supplier Code</Text>
+          <Dropdown
+            style={styles.DropOut}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.placeholderStyle}
+            labelField="label"
+            valueField="value"
+            placeholder={'Choose an Supplier'}
+            data={generateSupplierCodeOptions()}
+            value={selectedSupplierCode}
+            containerStyle={styles.dropdownContainer}
+            dropdownPosition={-4} // Adjust as needed
+            onChange={(value) => setSelectedSupplierCode(value)}
+            itemTextStyle={{color:COLORS.Black}}
           />
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Doc Date Range</Text>
+          <Text style={styles.label}>Consignment Sales Statement Date Range</Text>
           <View style={styles.dateRangeContainer}>
-            <TouchableOpacity onPress={() => showDatePicker('from', 'GRNE')} style={styles.datePickerInputO}>
+            <TouchableOpacity onPress={() => showDatePicker('from', 'consign')} style={styles.datePickerInputO}>
             <TextInput
               style={styles.datePickerInput}
-              value={GRNEFromDate ? GRNEFromDate : ''}
+              value={ConsignFromDate ? ConsignFromDate : ''}
               editable={false}
               placeholder='Date From'
               placeholderTextColor={COLORS.LightGrey}
@@ -202,10 +170,10 @@ const GRNFilterScreen = () => {
               color={'black'}
               style={{ marginTop: 15 }}
             />
-            <TouchableOpacity onPress={() => showDatePicker('to', 'GRNE')} style={styles.datePickerInputO}>
+            <TouchableOpacity onPress={() => showDatePicker('to', 'consign')} style={styles.datePickerInputO}>
             <TextInput
               style={styles.datePickerInput}
-              value={GRNEToDate ? GRNEToDate : ''}
+              value={consignToDate ? consignToDate : ''}
               editable={false}
               placeholder='Date To'
               placeholderTextColor={COLORS.LightGrey}
@@ -213,9 +181,9 @@ const GRNFilterScreen = () => {
             </TouchableOpacity>
           </View>
           <DateTimePickerModal
-            isVisible={isGRNEDatePickerVisible}
+            isVisible={isConsignDatePickerVisible}
             mode="date"
-            onConfirm={handleConfirmGRNE}
+            onConfirm={handleConfirmconsign}
             onCancel={hideDatePicker}
           />
         </View>
@@ -249,18 +217,17 @@ const GRNFilterScreen = () => {
                       {
                         displayDoc(location,
                                    ishq,
-                                   typeGRN,
-                                   GRNStatus,
+                                   typeconsign,
+                                   consignStatus,
                                    RefNo,
                                    selectedPeriodCode ? selectedPeriodCode.value : null,
-                                   GRNFromDate,
-                                   GRNToDate,
-                                   GRNEFromDate,
-                                   GRNEToDate,
+                                   ConsignFromDate,
+                                   consignToDate,
+                                   exp_from,exp_to,
                                    doc_type,
                                    limit,
                                    offset,
-                                   filter_supplier);
+                                   selectedSupplierCode ? selectedSupplierCode.value : null);
                       }
                     }
             >
@@ -380,4 +347,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withAuth(GRNFilterScreen);
+export default withAuth(ConsignStatementFilter);

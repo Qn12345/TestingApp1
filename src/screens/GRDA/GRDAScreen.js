@@ -124,6 +124,7 @@ const GRDAScreen = ({ navigation }) => {
           onFocus={handleFocus}
           onBlur={handleBlur}
           containerStyle={styles.flex1}
+          placeholderTextColor={COLORS.LightGrey}
         />
         {/* Filter button */}
         <TouchableOpacity

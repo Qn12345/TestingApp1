@@ -121,6 +121,7 @@ const PoScreen = ({ navigation }) => {
           onFocus={handleFocus}
           onBlur={handleBlur}
           containerStyle={styles.flex1}
+          placeholderTextColor={COLORS.LightGrey}
         />
 
         <TouchableOpacity

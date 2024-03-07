@@ -1,5 +1,5 @@
-import React, { useContext, useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Text, RefreshControl } from 'react-native';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, FlatList, TouchableOpacity, Text, RefreshControl,Animated,Easing } from 'react-native';
 import { ListItem, SearchBar, Chip } from '@rneui/themed'; // Import SearchBar
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,15 +10,19 @@ import { BasicFunc } from '../context/BasicFunc';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { DisplayFunc } from '../context/DisplayFunc';
 import withAuth from '../withAuth';
+import { AccDocFunc } from './AccDocFunc';
 
-const PCIScreen = ({ navigation }) => {
+const PaymentVoucher = ({ navigation }) => {
   const { isLoading } = useContext(BasicFunc);
-  const { filter,displayPdf, displayDoc } = useContext(DisplayFunc);
+  const { filter, displayDoc } = useContext(DisplayFunc);
+  const {pvvPdf} = useContext(AccDocFunc);
+  //const {consignSSList} = useContext(ConsignFunc);
   const route = useRoute();
-  const PCIData = route.params?.DocData?.result || [];
+  const PVData = route.params?.DocData?.result || [];
   const filtering = route.params?.DocData?.filtering || [];
   const result_count = route.params?.DocData?.result_count_all || '';
   const typeName = route.params?.typeName || '';
+  const titleName = route.params?.titleName || '';
   const location = route.params?.location || '';
   const ishq = route.params?.ishq || '';
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,18 +36,19 @@ const PCIScreen = ({ navigation }) => {
   const doc_type = ['all'];
   const limit = 100;
   const poffset = route.params?.offset || '';
-  const filter_supplier = '';
+  const filter_supplier = route.params?.filter_supplier || '';
   const date_from = route.params?.DocData?.filtering.date_from || '';
   const date_to = route.params?.DocData?.filtering.date_to || '';
   const flatListRef = useRef();
 
-  let status = fstatus.map(s => s === 'New' ? '' : s);
-  if (JSON.stringify(fstatus) === JSON.stringify(["New", "Viewed", "Printed"])) {
+  let status = fstatus.map(s =>( s === 'New' || s === 'NEW') ? '' : s);
+  if (JSON.stringify(fstatus) === JSON.stringify(["New","printed","viewed"])) {
     status = 'default';
   }
 
-  const filteredPCIData = PCIData.filter((PCI) =>
-  PCI.refno.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPVData = PVData.filter((pv) =>
+    pv.refno.toLowerCase().includes(searchQuery.toLowerCase())||
+    pv.prefix.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleFocus = () => {
@@ -60,59 +65,56 @@ const PCIScreen = ({ navigation }) => {
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-      key={index}
-      onPress={() => {
-        displayPdf(typeName, item.refno, item.status);
-      }}
-      style={styles.item}
-    >
-      <ListItem.Content>
-        <ListItem.Title style={styles.itemTitle}>{item.sname || 'N/A'}</ListItem.Title>
-        <ListItem.Subtitle>
-          <Text style={styles.blueLabel}>{typeName}# </Text>
-          <Text> {item.refno || 'N/A'} </Text>
-          <Text style={styles.blueLabel}>      Outlet </Text>
-          <Text> {item.loc_group || 'N/A'} </Text>
-        </ListItem.Subtitle>
-        <ListItem.Subtitle  style={{paddingTop:30}}>
-          <Icon name="calendar" size={20} color="#40bf40" />
-          <Text> {item.doc_date || 'N/A'}</Text>
-        </ListItem.Subtitle>
-        <ListItem.Subtitle>
-          <Icon name="clipboard" size={20} color="#439ce0" />
-          <Text> {item.doc_no || 'N/A'}</Text>
-        </ListItem.Subtitle>
-        <ListItem.Subtitle style={{position:'absolute',right:0,top:60}}>
-          <Text style={{color:'black',fontWeight:'bold'}}> {item.include_tax === '1' ? 'Incl. Tax' : 'N/A'}</Text>
-        </ListItem.Subtitle>
-        <ListItem.Subtitle style={styles.status}>
-          <Chip
-            title={item.status || 'N/A'}
-            containerStyle={{ position: 'absolute', bottom: 0, right: 0 }}
-            titleStyle={{ fontSize: 14, color: 'white' }}
-            // Adjust font size and color as needed
-            buttonStyle={{ backgroundColor: item.color }}
-            // getStatusColor(item.transtype)
-          />
-        </ListItem.Subtitle>
-        <ListItem.Subtitle style={styles.totalPrice}>
-          RM {item.amount}
-        </ListItem.Subtitle>
-      </ListItem.Content>
-    </TouchableOpacity>
-);
+            key={index}
+            onPress={() => {
+              pvvPdf(item.refno,typeName,item.scode,item.prefix);
+            }}
+            style={styles.item}
+          >
+            <ListItem.Content>
+            <ListItem.Title style={styles.itemTitle}>{item.sname}</ListItem.Title>
+              <ListItem.Subtitle>
+                <Text style={styles.blueLabel}>Refno </Text>
+                <Text> {item.refno} </Text>
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text style={styles.blueLabel}>Supplier Code </Text>
+                <Text> {item.scode} </Text>
+                <Text style={styles.blueLabel}>      Debtor Code </Text>
+                <Text> {item.debtor_code} </Text>
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text style={styles.blueLabel}>Outlet Code </Text>
+                <Text> {item.prefix} </Text>
+              </ListItem.Subtitle>
+              <ListItem.Subtitle  style={{paddingTop:15}}>
+                <Icons name="calendar-check" size={20} color="#439ce0"/>
+                <Text> {item.doc_date}</Text>
+              </ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.status}>
+                <Chip
+                  title={item.status || 'N/A'}
+                  containerStyle={{ position: 'absolute', bottom: 0, right: 0 }}
+                  titleStyle={{ fontSize: 14, color: 'white' }}
+                  // Adjust font size and color as needed
+                  buttonStyle={{ backgroundColor: item.color }}
+                  // getStatusColor(DIData.transtype)
+                />
+              </ListItem.Subtitle>
+            </ListItem.Content>
+          </TouchableOpacity>
+  );
 
-const keyExtractor = (item, index) => index.toString();
+  const keyExtractor = (item, index) => index.toString();
 
   return (
     <View style={styles.container}>
-      <Spinner visible={isLoading}/>
-      <PublicHeader title={[typeName,' (',result_count,') ']} />
+      <Spinner visible={isLoading} />
+      <PublicHeader title={[titleName,' (',result_count,') ']} />
       <View style={styles.searchBarContainer}>
         {/* SearchBar component */}
         <SearchBar
           placeholder="Search Ref No..."
-          placeholderTextColor={COLORS.LightGrey}
           onChangeText={handleSearch}
           value={searchQuery}
           style={styles.searchBar}
@@ -124,6 +126,7 @@ const keyExtractor = (item, index) => index.toString();
           onFocus={handleFocus}
           onBlur={handleBlur}
           containerStyle={styles.flex1}
+          placeholderTextColor={COLORS.LightGrey}
         />
         {/* Filter button */}
         <TouchableOpacity
@@ -134,6 +137,7 @@ const keyExtractor = (item, index) => index.toString();
         >
           <Icon name="filter" size={25} color={COLORS.White} />
         </TouchableOpacity>
+
         <View style={styles.chipsContainer}>
           {Object.entries(filtering).map(([key, value], index) => (
             Array.isArray(value) ? (
@@ -165,11 +169,12 @@ const keyExtractor = (item, index) => index.toString();
             )
           ))}
         </View>
+
       </View>
 
       <FlatList
         ref={flatListRef}
-        data={filteredPCIData}
+        data={filteredPVData}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         refreshControl={
@@ -180,11 +185,11 @@ const keyExtractor = (item, index) => index.toString();
         }
         //onEndReachedThreshold={9}
         onEndReached={() => {
-          if (PCIData.length > 99)
+          if (PVData.length > 99)
           {
             console.log(limit);
             console.log(poffset);
-            console.log(PCIData.length);
+            console.log(PVData.length);
             const parsedPoffset = isNaN(parseFloat(poffset)) ? 0 : parseFloat(poffset);
             const offset = parsedPoffset + 3;
             displayDoc(location, ishq, typeName, status, refno, period_code, date_from, date_to, exp_from, exp_to, doc_type, limit, offset, filter_supplier);
@@ -196,13 +201,11 @@ const keyExtractor = (item, index) => index.toString();
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Grey,
-  },
-  scroll: {
-    flex: 1,
   },
   item: {
     flexDirection: 'row',
@@ -229,7 +232,6 @@ const styles = StyleSheet.create({
   totalPrice:{
     position:'absolute',
     right:0,
-    top:30,
     fontWeight: 'bold',
     fontSize:FONTSIZE.size_24,
   },
@@ -297,4 +299,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withAuth(PCIScreen);
+export default withAuth(PaymentVoucher);

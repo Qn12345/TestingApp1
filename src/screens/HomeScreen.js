@@ -12,7 +12,7 @@ import withAuth from './withAuth';
 import { TicketFunc } from './tickets/TicketFunc';
 
 const HomeScreen = ({ navigation }) => {
-  const {isLoading,displayDoc,displayTrigger} = useContext(DisplayFunc);
+  const {isLoading,displayDoc,displayTrigger,subConsignDashboard,subAccountingDashboard,subBillingDashboard} = useContext(DisplayFunc);
   const {getOpenTicketInfo} = useContext(TicketFunc);
   const route = useRoute();
   const dashboardData = route.params?.dashboardData || [];
@@ -21,13 +21,6 @@ const HomeScreen = ({ navigation }) => {
   const location = route.params?.location || '';
   const user_group = route.params?.user_group || '';
   const ishq = route.params?.ishq || '';
-  const typePo = dashboardData[0].type;
-  const typeGRN = dashboardData[1].type;
-  const typeGRDA = dashboardData[2].type;
-  const typePRDNCN = dashboardData[3].type;
-  const typePDNCN = dashboardData[4].type;
-  const typePCI = dashboardData[5].type;
-  const typeDI = dashboardData[6].type;
   const status = 'default';
   const refno = '';
   const period_code = '';
@@ -39,15 +32,26 @@ const HomeScreen = ({ navigation }) => {
   const filter_supplier = '';
   const date_from = '';//dateFrom;
   const date_to = '';//dateTo;
-
-  const groupeddashboardData = dashboardData.reduce((type, item) => {
-    const key = item.type;
-    if (!type[key]) {
-      type[key] = [];
+  const getIconName = (type) => {
+    switch (type) {
+      case 'PO':
+        return 'clipboard';
+      case 'GRN':
+        return 'checkbox';
+      case 'GRDA':
+        return 'close-circle';
+      case 'PRDNCN':
+        return 'arrow-back-circle';
+      case 'PDNCN':
+        return 'arrow-down-circle';
+      case 'PCI':
+        return 'clipboard';
+      case 'DI':
+        return 'clipboard';
+      default:
+        return 'clipboard';
     }
-    type[key].push(item);
-    return type;
-  }, {});
+  };
 
   return (
     <View style={styles.container}>
@@ -62,12 +66,40 @@ const HomeScreen = ({ navigation }) => {
         {/* Buttons Section */}
         <View style={styles.buttonContainer}>
         {( dashboardData !== undefined || dashboardData !== null) && (
-        <>
+          dashboardData.map((acc, index) => (
+          <React.Fragment key={index}>
           <TouchableOpacity
-            style={[styles.button,{ backgroundColor: COLORS.LightBlue }]}
-            onPress={() =>
+            style={[styles.button,{ backgroundColor: `${acc.background_color}` }]}
+            onPress={async () =>
                       {
-                        displayDoc(location,ishq,typePo,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier);
+                          displayDoc(location,ishq,acc.type,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier);
+                      }
+                    }
+          >
+            <View style={styles.buttonContent}>
+              <Icon
+                name={getIconName(acc.type)}
+                size={120} // Adjust the size of the icon as needed
+                color={COLORS.TransGrey}
+                style={styles.icon}
+              />
+              <View style={styles.NumWord}>
+                <Text style={styles.buttonTextAmt}>{acc.count_doc}</Text>
+                <Text style={styles.buttonText}>{acc.display_name}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          </React.Fragment>
+          ))
+          )}
+
+        {( user_group === '3379ECDBDB0711E7B504A81E8453CCF0') && (
+          <>
+          <TouchableOpacity
+            style={[styles.button,{ backgroundColor: COLORS.Blue }]}
+            onPress={() => //move to upper part if consignment release
+                      {
+                        subConsignDashboard(location,ishq,'Consignment');
                       }
                     }
           >
@@ -79,82 +111,19 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.icon}
               />
               <View style={styles.NumWord}>
-                <Text style={styles.buttonTextAmt}>{groupeddashboardData.PO[0].count_doc}</Text>
-                <Text style={styles.buttonText}>Purchase Order</Text>
+                <Text style={styles.buttonTextAmt}> </Text>
+                <Text style={styles.buttonText}>Consignment</Text>
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button,{ backgroundColor: COLORS.Green }]}
-            onPress={() => { displayDoc(location,ishq,typeGRN,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier); }}
-          >
-            <View style={styles.buttonContent}>
-              <Icon
-                name="checkbox" // Replace with the actual icon name
-                size={120} // Adjust the size of the icon as needed
-                color={COLORS.TransGrey}
-                style={styles.icon}
-              />
-              <View style={styles.NumWord}>
-                <Text style={styles.buttonTextAmt}>{groupeddashboardData.GRN[0].count_doc}</Text>
-                <Text style={styles.buttonText}>Goods Received Note</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button,{ backgroundColor: COLORS.Orange }]}
-            onPress={() => {displayDoc(location,ishq,typeGRDA,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier);}}
-          >
-            <View style={styles.buttonContent}>
-              <Icon
-                name="close-circle" // Replace with the actual icon name
-                size={120} // Adjust the size of the icon as needed
-                color={COLORS.TransGrey}
-                style={styles.icon}
-              />
-              <View style={styles.NumWord}>
-                <Text style={styles.buttonTextAmt}>{groupeddashboardData.GRDA[0].count_doc}</Text>
-                <Text style={styles.buttonText}>GR Difference Advice</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button,{ backgroundColor: COLORS.Red }]}
-            onPress={() => {displayDoc(location,ishq,typePRDNCN,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier); }}
-          >
-            <View style={styles.buttonContent}>
-              <Icons
-                name="assignment-return" // Replace with the actual icon name
-                size={120} // Adjust the size of the icon as needed
-                color={COLORS.TransGrey}
-                style={styles.icon}
-              />
-              <View style={styles.NumWord}>
-                <Text style={styles.buttonTextAmt}>{groupeddashboardData.PRDNCN[0].count_doc}</Text>
-                <Text style={styles.buttonText}>Purchase Return DN/CN</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button,{ backgroundColor: COLORS.DarkBlue}]}
-            onPress={() => {displayDoc(location,ishq,typePDNCN,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier); }}
-          >
-            <View style={styles.buttonContent}>
-              <Icons
-                name="assignment-returned" // Replace with the actual icon name
-                size={120} // Adjust the size of the icon as needed
-                color={COLORS.TransGrey}
-                style={styles.icon}
-              />
-              <View style={styles.NumWord}>
-                <Text style={styles.buttonTextAmt}>{groupeddashboardData.PDNCN[0].count_doc}</Text>
-                <Text style={styles.buttonText}>Purchase DN/CN</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.button,{ backgroundColor: COLORS.DarkGreen }]}
-            onPress={() => { displayDoc(location,ishq,typePCI,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier); }}
+            onPress={() => //move to upper part if consignment release
+                      {
+                        subAccountingDashboard(location,ishq,'Accounting_Documents');
+                      }
+                    }
           >
             <View style={styles.buttonContent}>
               <Icons
@@ -164,32 +133,34 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.icon}
               />
               <View style={styles.NumWord}>
-                <Text style={styles.buttonTextAmt}>{groupeddashboardData.PCI[0].count_doc}</Text>
-                <Text style={styles.buttonText}>Promotion Claim Tax Invoice</Text>
+                <Text style={styles.buttonTextAmt}> </Text>
+                <Text style={styles.buttonText}>Accounting Documents</Text>
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button,{ backgroundColor: COLORS.Brown }]}
-            onPress={() => { displayDoc(location,ishq,typeDI,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier); }}
-          >
-            <View style={styles.buttonContent}>
-              <Icons
-                name="assignment" // Replace with the actual icon name
-                size={120} // Adjust the size of the icon as needed
-                color={COLORS.TransGrey}
-                style={styles.icon}
-              />
-              <View style={styles.NumWord}>
-                <Text style={styles.buttonTextAmt}>{groupeddashboardData.DI[0].count_doc}</Text>
-                <Text style={styles.buttonText}>Display Incentive Tax Invoice</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          </>
-          )}
 
-        {( user_group === '3379ECDBDB0711E7B504A81E8453CCF0') && (
+          <TouchableOpacity
+            style={[styles.button,{ backgroundColor: COLORS.DarkGreen }]}
+            onPress={() => //move to upper part if consignment release
+                      {
+                        subBillingDashboard(location,ishq,'B2B_monthly_billing_invoices');
+                      }
+                    }
+          >
+            <View style={styles.buttonContent}>
+              <Icons
+                name="assignment" // Replace with the actual icon name
+                size={120} // Adjust the size of the icon as needed
+                color={COLORS.TransGrey}
+                style={styles.icon}
+              />
+              <View style={styles.NumWord}>
+                <Text style={styles.buttonTextAmt}> </Text>
+                <Text style={styles.buttonText}>B2B Monthly Billing Invoices</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.button,{ backgroundColor: COLORS.Purple }]}
             onPress={() => { displayTrigger();}}//module_group=super_admin 
@@ -207,11 +178,13 @@ const HomeScreen = ({ navigation }) => {
               </View>
             </View>
           </TouchableOpacity>
+          </>
+          
         )}
         </View>
       </View>
       </ScrollView>
-      
+      {/*
       <TouchableOpacity onPress={() => { getOpenTicketInfo(); }}>
         <View style={{backgroundColor:COLORS.LightBlue,
               width:70,position:'absolute',right:20,bottom:20,
@@ -220,7 +193,7 @@ const HomeScreen = ({ navigation }) => {
         <Icon name="pencil" size={28} color={COLORS.White}/>
         </View>
       </TouchableOpacity>
-      
+      */}
     </View>
   );
 

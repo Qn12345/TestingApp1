@@ -163,6 +163,7 @@ const Sidebar = ({ onClose }) => {
         </TouchableOpacity>
         </View>
       </ScrollView>
+      <Text style={{color:'grey'}}>Version 1.1.2</Text>
     </View>
   );
 };

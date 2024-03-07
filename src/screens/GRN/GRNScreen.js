@@ -132,6 +132,7 @@ const keyExtractor = (item, index) => index.toString();
           onFocus={handleFocus}
           onBlur={handleBlur}
           containerStyle={styles.flex1}
+          placeholderTextColor={COLORS.LightGrey}
         />
 
         <TouchableOpacity

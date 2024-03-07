@@ -158,6 +158,7 @@ const PoFilterScreen = () => {
               value={poFromDate ? poFromDate : ''}
               editable={false}
               placeholder='Date From'
+              placeholderTextColor={COLORS.LightGrey}
             />
             </TouchableOpacity>
             <Icon
@@ -172,6 +173,7 @@ const PoFilterScreen = () => {
               value={poToDate ? poToDate : ''}
               editable={false}
               placeholder='Date To'
+              placeholderTextColor={COLORS.LightGrey}
             />
             </TouchableOpacity>
           </View>
@@ -192,6 +194,7 @@ const PoFilterScreen = () => {
               value={poEFromDate ? poEFromDate : ''}
               editable={false}
               placeholder='Date From'
+              placeholderTextColor={COLORS.LightGrey}
             />
             </TouchableOpacity>
             <Icon
@@ -206,6 +209,7 @@ const PoFilterScreen = () => {
               value={poEToDate ? poEToDate : ''}
               editable={false}
               placeholder='Date To'
+              placeholderTextColor={COLORS.LightGrey}
             />
             </TouchableOpacity>
           </View>

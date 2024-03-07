@@ -61,6 +61,7 @@ const LoginScreen = ({ navigation }) => {
             keyboardType="email-address"
             autoCapitalize="none"
             onChangeText={(text) => setUserid(text)}
+            placeholderTextColor={COLORS.LightGrey}
           />
         </View>
 
@@ -72,6 +73,7 @@ const LoginScreen = ({ navigation }) => {
             secureTextEntry={!showPassword}
             value={password}
             onChangeText={(text) => setPassword(text)}
+            placeholderTextColor={COLORS.LightGrey}
           />
           <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}

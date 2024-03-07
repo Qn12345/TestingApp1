@@ -30,8 +30,7 @@ export const BasicProvider = ({children}) => {
           AsyncStorage.setItem('location', location);
           AsyncStorage.setItem('ishq', ishq);
           AsyncStorage.setItem('super_admin',response.data.user_group_name[0].user_group_guid);
-          const dashDataArray = Object.values(response.data.dashboard);
-          navigation.navigate('HomeScreen', {dashboardData:dashDataArray, dateFrom:response.data.date_from, dateTo:response.data.date_to, UserName:response.data.user_name,location:location,ishq:ishq,user_group:response.data.user_group_name[0].user_group_guid});
+          navigation.navigate('HomeScreen', {dashboardData:response.data.dashboard, dateFrom:response.data.date_from, dateTo:response.data.date_to, UserName:response.data.user_name,location:location,ishq:ishq,user_group:response.data.user_group_name[0].user_group_guid});
           setIsLoading(false);
         }
       })

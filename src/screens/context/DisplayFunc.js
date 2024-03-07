@@ -22,11 +22,12 @@ export const DisplayProvider = ({children}) => {
   //display list doc
   const displayDoc  = async (location,ishq,type,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier) => {
     setIsLoading(true);
+
     if (refno !== '')
     {
       status = '';
     }
-    else if (status.length <= 0)
+    else if (status.length <= 0 || status === undefined)
     {
       status = 'default';
     }
@@ -97,6 +98,64 @@ export const DisplayProvider = ({children}) => {
             navigation.navigate('DIScreen', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset });
             setIsLoading(false);
           }
+          else if (type === 'ConsignSS')
+          {
+            navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'PVV')
+          {
+            navigation.navigate('PaymentVoucher', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Payment Voucher',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'PIN')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'PVI')
+          {
+            navigation.navigate('APCreditNote', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'AP Credit Note',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'PDN')
+          {
+            navigation.navigate('APCreditNote', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'AP Debit Note',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'SIN')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'SVI')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'SDN')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (type === 'Consignment')
+          {
+            //not yet release for now
+            subConsignDashboard(location,ishq,type);
+            setIsLoading(false);
+          }
+          else if (type === 'Accounting_Documents')
+          {
+            //not yet release for now
+            subAccountingDashboard(location,ishq,type);
+            setIsLoading(false);
+          }
+          else if (type === 'B2B_monthly_billing_invoices')
+          {
+            //not yet release for now
+            subBillingDashboard(location,ishq,type);
+            setIsLoading(false);
+          }
         }
       })
       .catch(e => {
@@ -155,6 +214,46 @@ export const DisplayProvider = ({children}) => {
           else if (typeName === 'DI')
           {
             navigation.navigate('DIFilterScreen', { FilterData: response.data, typeName:typeName, location:location, ishq:ishq  });
+            setIsLoading(false);
+          }
+          else if (typeName === 'ConsignSS')
+          {
+            navigation.navigate('ConsignStatementFilter', { FilterData: response.data, typeName:typeName, location:location, ishq:ishq});
+            setIsLoading(false);
+          }
+          else if (typeName === 'PVV')
+          {
+            navigation.navigate('PVVFilter', { FilterData: response.data, typeName:typeName, location:location, ishq:ishq});
+            setIsLoading(false);
+          }
+          else if (typeName === 'PIN')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (typeName === 'PVI')
+          {
+            navigation.navigate('PVVFilter', { FilterData: response.data, typeName:typeName, location:location, ishq:ishq});
+            setIsLoading(false);
+          }
+          else if (typeName === 'PDN')
+          {
+            navigation.navigate('PVVFilter', { FilterData: response.data, typeName:typeName, location:location, ishq:ishq});
+            setIsLoading(false);
+          }
+          else if (typeName === 'SIN')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (typeName === 'SVI')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
+            setIsLoading(false);
+          }
+          else if (typeName === 'SDN')
+          {
+            //navigation.navigate('ConsignStatement', { DocData: response.data, typeName:type, location:location, ishq:ishq, offset:offset, titleName:'Consignment Sales Statement',filter_supplier:filter_supplier});
             setIsLoading(false);
           }
         }
@@ -330,6 +429,81 @@ export const DisplayProvider = ({children}) => {
       });
   };
 
+  const subConsignDashboard = async(location,ishq,sub_dashboard_type) => {
+    setIsLoading(true);
+    axios
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Dashboard/sub_dashboard',{
+        sub_dashboard_type,
+        location,
+        ishq,
+        customer_guid: '833DF49D303711EE857842010A940003',
+        user_guid: await AsyncStorage.getItem('user_guid'),
+      })
+      .then(response => {
+        if (response.data.dashboard === '') {
+          Alert.alert('No Data');
+          setIsLoading(false);
+        } else {
+          navigation.navigate('ConsignmentDashboard', {dashboardConsignData:response.data.dashboard, dateFrom:response.data.date_from, dateTo:response.data.date_to});
+          setIsLoading(false);
+        }
+      })
+      .catch(e => {
+        console.log('Error:', e);
+        setIsLoading(false);
+      });
+  };
+
+  const subAccountingDashboard = async(location,ishq,sub_dashboard_type) => {
+    setIsLoading(true);
+    axios
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Dashboard/sub_dashboard_accounting_document',{
+        sub_dashboard_type,
+        location,
+        ishq,
+        customer_guid: '833DF49D303711EE857842010A940003',
+        user_guid: await AsyncStorage.getItem('user_guid'),
+      })
+      .then(response => {
+        if (response.data.dashboard === '') {
+          Alert.alert('No Data');
+          setIsLoading(false);
+        } else {
+          navigation.navigate('AccountingDocDashboard', {dashboardAccData:response.data.dashboard, dateFrom:response.data.date_from, dateTo:response.data.date_to});
+          setIsLoading(false);
+        }
+      })
+      .catch(e => {
+        console.log('Error:', e);
+        setIsLoading(false);
+      });
+  };
+
+  const subBillingDashboard = async(location,ishq,sub_dashboard_type) => {
+    setIsLoading(true);
+    axios
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Dashboard/sub_dashboard_b2b_monthly_billing_invoices',{
+        sub_dashboard_type,
+        location,
+        ishq,
+        customer_guid: '833DF49D303711EE857842010A940003',
+        user_guid: await AsyncStorage.getItem('user_guid'),
+      })
+      .then(response => {
+        if (response.data.dashboard === '') {
+          Alert.alert('No Data');
+          setIsLoading(false);
+        } else {
+          navigation.navigate('BillingDashboard', {dashboardAccData:response.data.dashboard, dateFrom:response.data.date_from, dateTo:response.data.date_to});
+          setIsLoading(false);
+        }
+      })
+      .catch(e => {
+        console.log('Error:', e);
+        setIsLoading(false);
+      });
+  };
+
   return (
     <DisplayFunc.Provider
       value={{
@@ -339,6 +513,9 @@ export const DisplayProvider = ({children}) => {
         displayTrigger,
         displayPdf,
         handleDownload,
+        subConsignDashboard,
+        subAccountingDashboard,
+        subBillingDashboard,
       }}>
       {children}
       <CustomAlert

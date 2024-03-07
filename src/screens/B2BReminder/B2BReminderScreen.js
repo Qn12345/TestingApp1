@@ -93,6 +93,7 @@ const B2BReminderScreen = ({ navigation }) => {
       <View style={styles.searchBarContainer}>
         <SearchBar
           placeholder="Search Company Name..."
+          placeholderTextColor={COLORS.LightGrey}
           onChangeText={handleSearch}
           value={searchQuery}
           style={styles.searchBar}

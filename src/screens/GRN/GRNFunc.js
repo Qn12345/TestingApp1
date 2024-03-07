@@ -14,7 +14,17 @@ export const GRNProvider = ({children}) => {
   const [showAlert, setShowAlert] = useState(false);
   const [DoneMessage, setDoneMessage] = useState('');
   const [showDone, setShowDone] = useState(false);
-  const {displayPdf} = useContext(DisplayFunc);
+  const {displayDoc} = useContext(DisplayFunc);
+  const status = 'default';
+  const period_code = '';
+  const exp_from = '';
+  const exp_to = '';
+  const doc_type = ['all'];
+  const limit = 100;
+  const offset = 0;
+  const filter_supplier = '';
+  const date_from = '';//dateFrom;
+  const date_to = '';//dateTo;
 
   const update_einvno = async (einvno,einvdate,e_gr_refno) => {
     setIsLoading(true);
@@ -81,23 +91,27 @@ export const GRNProvider = ({children}) => {
   const generate_ecn_einv = async (einvno,einvdate,e_gr_refno) => {
     setIsLoading(true);
     axios //https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/generate_all_doc_type
-      .post('http://office.panda-eco.com:18243/rest_b2b/index.php/lite_b2b/Doc_info/generate_all_doc_type', {
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/generate_all_doc_type', {
         einvno,
         einvdate,
         e_gr_refno,
-        user_guid: 'DB287ED8998B11EEB2B4B2C55218ACE', //'DB287ED8998B11EEB2B4B2C55218ACE
-        customer_guid: '13EE932D98EB11EAB05B000D3AA2838A', //13EE932D98EB11EAB05B000D3AA2838A
+        user_guid: await AsyncStorage.getItem('user_guid'), //DB287ED8998B11EEB2B4B2C55218ACE
+        customer_guid: '833DF49D303711EE857842010A940003', //13EE932D98EB11EAB05B000D3AA2838A
       })
-      .then(response => {
-        //console.log();
+      .then(async response => {
+        const location = await AsyncStorage.getItem('location');
+        const ishq = await  AsyncStorage.getItem('ishq');
+        //console.log(response.data.status);
         if (response.data.status === 'false') {
           setShowAlert(true);
           setAlertMessage(response.data.message);
-
           setIsLoading(false);
         } else {
           setShowDone(true);
           setDoneMessage(response.data.message);
+          let refno = '';
+          let type = 'GRN';
+          displayDoc(location,ishq,type,status,refno,period_code,date_from,date_to,exp_from,exp_to,doc_type,limit,offset,filter_supplier);
           setIsLoading(false);
         }
       })
@@ -105,6 +119,32 @@ export const GRNProvider = ({children}) => {
         console.log('Error:', e);
         setIsLoading(false);
       });
+  };
+
+  const displayEinv = async (refno) => {
+    console.log(refno);
+    setIsLoading(true);
+    let file_name = `${refno}.pdf`;
+    const customer_guid = '833DF49D303711EE857842010A940003';
+    const user_guid = await AsyncStorage.getItem('user_guid');
+
+    let pdfDocEinv = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/einvoice_report?refno=${refno}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+    navigation.navigate('DisplayEinvPdf', {file_path:pdfDocEinv,title_name:'View E-Invoice PDF',file_name:file_name});
+    setIsLoading(false);
+
+  };
+
+  const displayEcn = async (refno,trans_type) => {
+    console.log(refno);
+    setIsLoading(true);
+    let file_name = `${refno}-${trans_type}.pdf`;
+    const customer_guid = '833DF49D303711EE857842010A940003';
+    const user_guid = await AsyncStorage.getItem('user_guid');
+
+    let pdfDocEinv = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/ecn_report?refno=${refno}&trans_type=${trans_type}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+    navigation.navigate('DisplayEcnPdf', {file_path:pdfDocEinv,title_name:'View E-CN PDF',file_name:file_name});
+    setIsLoading(false);
+
   };
 
 
@@ -115,6 +155,8 @@ export const GRNProvider = ({children}) => {
         update_einvno,
         update_ecn,
         generate_ecn_einv,
+        displayEinv,
+        displayEcn,
       }}>
       {children}
       <CustomAlert

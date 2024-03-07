@@ -297,6 +297,7 @@ const OpenTicketScreen = ({ navigation }) => {
                                 onChangeText={onChangeUrlText}
                                 value={UrlText}
                                 placeholder="Text"
+                                placeholderTextColor={COLORS.LightGrey}
                                 editable={true}
                                 />
                                 <Text style={{color:COLORS.Black,fontSize:FONTSIZE.size_16,padding:5}}>
@@ -307,6 +308,7 @@ const OpenTicketScreen = ({ navigation }) => {
                                 onChangeText={onChangeUrl}
                                 value={Url}
                                 placeholder="URL"
+                                placeholderTextColor={COLORS.LightGrey}
                                 editable={true}
                                 />
                                 {visibleWarning ? <Text style={{color:COLORS.Red,fontSize:14}}>{visibleWarning}</Text> : null}
