@@ -119,15 +119,20 @@ export const BillingFuncProvider = ({children}) => {
       });
   };
 
-  //not yet try
   const confirmSlip = async (supplier_guid,invoice_no) => {
     setIsLoading(true);
+    const formData = new FormData();
+    formData.append('supplier_guid', supplier_guid);
+    formData.append('invoice_no', invoice_no);
+    formData.append('user_guid', await AsyncStorage.getItem('user_guid'));
     axios
-      .post('https://apitmg.xbridge.my/rest_b2b/index.php/Invoice_remittance/update_status_invoice_remittance',{
-        supplier_guid,
-        invoice_no,
-        user_guid: await AsyncStorage.getItem('user_guid'),
-      })
+      .post('https://apitmg.xbridge.my/rest_b2b/Invoice_remittance/update_status_invoice_remittance',formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
       .then(response => {
         //console.log(response.data.result_count);
         if (response.data.status === 'false') {
@@ -147,15 +152,19 @@ export const BillingFuncProvider = ({children}) => {
       });
   };
 
-  //not yet try
   const deleteSlip = async (supplier_guid,invoice_no) => {
     setIsLoading(true);
+    const formData = new FormData();
+    formData.append('supplier_guid', supplier_guid);
+    formData.append('invoice_no', invoice_no);
     axios
-      .post('https://apitmg.xbridge.my/rest_b2b/index.php/Invoice_remittance/delete_invoice_remittance_document',{
-        supplier_guid,
-        invoice_no,
-        user_guid: await AsyncStorage.getItem('user_guid'),
-      })
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/Invoice_remittance/delete_invoice_remittance_document',formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
       .then(async response => {
         //console.log(response.data.result_count);
         if (response.data.status === 'false') {
@@ -182,27 +191,34 @@ export const BillingFuncProvider = ({children}) => {
       });
   };
 
-  //not yet try
   const uploadSlip = async (supplier_guid,invoice_no,remark,fileResponse) => {
     setIsLoading(true);
+    console.log(fileResponse);
     const formData = new FormData();
-
-    formData.append('file', {
-      uri: fileResponse[0].uri,
-      name: fileResponse[0].name,
-      type: fileResponse[0].type,
+    formData.append("upload_remittance_doc", {
+      uri:fileResponse[0].uri,
+      name:fileResponse[0].name,
+      type:fileResponse[0].type,
+      size:fileResponse[0].size,
     });
 
-    axios //https://apitmg.xbridge.my/rest_b2b/index.php/Invoice_remittance
-      .post('',{
-        supplier_guid,
-        invoice_no,
-        user_guid: await AsyncStorage.getItem('user_guid'),
-        remark,
-        formData,
-      })
+    formData.append('supplier_guid', supplier_guid);
+    formData.append('invoice_no', invoice_no);
+    formData.append('user_guid', await AsyncStorage.getItem('user_guid'));
+    formData.append('remark', remark);
+
+    axios //
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/Invoice_remittance',formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
       .then(async response => {
-        //console.log(response.data.result_count);
+        console.log(response.data.status);
+        //console.log(response);
+        console.log(response.data);
         if (response.data.status === 'false') {
           setShowAlert(true);
           setAlertMessage(response.data.message);

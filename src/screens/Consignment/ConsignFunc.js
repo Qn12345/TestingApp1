@@ -1,14 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import React, {createContext, useState} from 'react';
+import React, {createContext, useContext, useState} from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import CustomAlert from '../components/CustomAlert';
+import { DisplayFunc } from '../context/DisplayFunc';
 
 export const ConsignFunc = createContext();
 
 export const ConsignProvider = ({children}) => {
   const [isLoading, setIsLoading] = useState(false);
+  const {displayDoc} = useContext(DisplayFunc);
   const navigation = useNavigation();
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -86,18 +88,18 @@ export const ConsignProvider = ({children}) => {
     }
 
     axios
-      .post('https://api.xbridge.my/rest_b2b/index.php/lite_b2b/Doc_info',{ //https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info',{ //https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info
         type:typeName,
-        customer_guid:'B00CA0BE403611EBA2FC000D3AC8DFD7', //blank
-        user_guid:'7FEA88F8874711EE8A5C6045BD209184',//blank
+        customer_guid, //blank
+        user_guid,//blank
         refno,//blank
         pdncn,//blank
-        period_code:'2023-05',//blank
-        supcode:'AX00',//blank
-        company_id:'199301015847',//''
-        company_name:'CHUA KAH SENG SUPERMARKET SDN BHD',//''
-        date_trans:'2023-05-31',//''
-        status:'New',//''
+        period_code,//blank
+        supcode,//blank
+        company_id:'',//''
+        company_name:'',//''
+        date_trans:'',//''
+        status:'',//''
         loc:'',//''
       })
       .then(async (response) => {
@@ -122,12 +124,12 @@ export const ConsignProvider = ({children}) => {
     const user_guid = await AsyncStorage.getItem('user_guid');
 
     axios
-      .post('https://api.xbridge.my/rest_b2b/index.php/lite_b2b/Doc_info/consignment_sales_statement_by_supcode_list_child',{ 
-        //https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/consignment_sales_statement_by_supcode_list_child
-        customer_guid:'B00CA0BE403611EBA2FC000D3AC8DFD7', //blank
-        user_guid:'7FEA88F8874711EE8A5C6045BD209184',//blank
-        refno:'M8823050131-AX00',//blank
-        date_trans:'2023-05-31',//blank
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/consignment_sales_statement_by_supcode_list_child',{ 
+        //
+        customer_guid, //blank
+        user_guid,//blank
+        refno,//blank
+        date_trans,//blank
       })
       .then(async (response) => {
         if (response.data === '') {
@@ -150,17 +152,15 @@ export const ConsignProvider = ({children}) => {
       });
   };
 
-  //not yet try
   const updateInvNo = async (period_code,supplier_inv_no,supplier_inv_date,supcus_code,date_trans) => {
     setIsLoading(true);
     const customer_guid = '833DF49D303711EE857842010A940003';
     const user_guid = await AsyncStorage.getItem('user_guid');
 
     axios //https://api.xbridge.my/rest_b2b/index.php/lite_b2b/Doc_info/header_save_inv_no_by_supcode
-      .post('',{ 
-        //https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/header_save_inv_no_by_supcode
-        customer_guid:'B00CA0BE403611EBA2FC000D3AC8DFD7', //blank
-        user_guid:'7FEA88F8874711EE8A5C6045BD209184',//blank
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/header_save_inv_no_by_supcode',{ 
+        customer_guid, //blank
+        user_guid,//blank
         period_code,
         supplier_inv_no,
         supplier_inv_date,
@@ -187,23 +187,28 @@ export const ConsignProvider = ({children}) => {
 
   };
 
-  //not yet try
   const generateEInv = async (period_code,supplier_inv_no,supplier_inv_date,supcus_code,date_trans) => {
     setIsLoading(true);
     const customer_guid = '833DF49D303711EE857842010A940003';
     const user_guid = await AsyncStorage.getItem('user_guid');
-
+    const location = await AsyncStorage.getItem('location');
+    const ishq = await AsyncStorage.getItem('ishq');
+    console.log(period_code);
+    console.log(supplier_inv_no);
+    console.log(supplier_inv_date);
+    console.log(supcus_code);
+    console.log(date_trans);
     axios //https://api.xbridge.my/rest_b2b/index.php/lite_b2b/Doc_info/header_save_inv_no_by_supcode
-      .post('',{ 
-        //https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/consignment_generate_e_invoices_by_supcode
-        customer_guid:'B00CA0BE403611EBA2FC000D3AC8DFD7', //blank
-        user_guid:'7FEA88F8874711EE8A5C6045BD209184',//blank
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Doc_info/consignment_generate_e_invoices_by_supcode',{ 
+        customer_guid, //blank
+        user_guid,//blank
         period_code,
         supplier_inv_no,
         supplier_inv_date,
         supcus_code,
         date_trans,
         company_id:'',
+        company_name:'',
       })
       .then(async (response) => {
         if (response.data.status === 'false') {
@@ -214,7 +219,7 @@ export const ConsignProvider = ({children}) => {
         else {
           setShowDone(true);
           setDoneMessage(response.data.message);
-          consignSSList('ConsignSS','','',period_code,supcus_code,'');
+          displayDoc(location,ishq,'ConsignSS','','',period_code,'','','','','','','','');
           setIsLoading(false);
         }
       })
@@ -223,6 +228,17 @@ export const ConsignProvider = ({children}) => {
         setIsLoading(false);
       });
 
+  };
+
+  const viewConsignEinv = async (trans_guid,supcode,company_id) => {
+    setIsLoading(true);
+    const customer_guid = '833DF49D303711EE857842010A940003';
+    const user_guid = await AsyncStorage.getItem('user_guid');
+    let report_type = 'consignment_e_invoice_by_supcode';
+    let file_name = `${trans_guid}.pdf`;
+    let pdfDocConsign = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/consignment_e_invoice_by_supcode_view?report_type=${report_type}&trans_guid=${trans_guid}&supcode=${supcode}&company_id=${company_id}&customer_guid=${customer_guid}&user_guid=${user_guid}`;
+    navigation.navigate('DisplayConsignPdf', {file_path:pdfDocConsign,title_name:'Consignment Preview',file_name:file_name});
+    setIsLoading(false);console.log(pdfDocConsign);
   };
 
   return (
@@ -235,6 +251,7 @@ export const ConsignProvider = ({children}) => {
         consignListPdf,
         updateInvNo,
         generateEInv,
+        viewConsignEinv,
       }}>
       {children}
       <CustomAlert

@@ -73,6 +73,7 @@ import Invoices from './src/screens/Billing/Invoices';
 import InvoiceFilter from './src/screens/Billing/InvoiceFilter';
 import DisplayInvPdf from './src/screens/Billing/DisplayInvPdf';
 import DisplayViewSlipPdf from './src/screens/Billing/DisplayViewSlipPdf';
+import RegistrationDashboard from './src/screens/RegistredDashboard/RegistrationDashboard';
 
 PushNotification.createChannel(
   {
@@ -153,6 +154,7 @@ function App() {
             <Stack.Screen name="InvoiceFilter" component={withAuth(InvoiceFilter)} />
             <Stack.Screen name="DisplayInvPdf" component={withAuth(DisplayInvPdf)} />
             <Stack.Screen name="DisplayViewSlipPdf" component={withAuth(DisplayViewSlipPdf)} />
+            <Stack.Screen name="RegistrationDashboard" component={withAuth(RegistrationDashboard)} />
           </Stack.Navigator>
           </BillingFuncProvider>
           </AccDocFuncProvider>

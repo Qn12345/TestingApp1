@@ -84,7 +84,6 @@ const ConsignmentDashboard = ({ navigation }) => {
         </View>
       </View>
       </ScrollView>
-      
     </View>
   );
 

@@ -171,9 +171,9 @@ const ConsignStatement = ({ navigation }) => {
                 <Animated.Text style={{ color: toggleAnim.interpolate({
                     inputRange: [0, 1],
                     outputRange: ['black', 'red'],
-                  })}}> To Generate Invoice</Animated.Text>
+                  })}}> {item.e_inv_create_time === '' ? ('To Generate Invoice') : (`${item.e_inv_create_time} Generated`)} </Animated.Text>
               ) : (
-                <Text style={{color:'red'}}> {item.inv_date} Generated</Text>
+                <Text style={{color:'red'}}> {item.e_inv_create_time} Generated</Text>
               )}
             </View>
           </ListItem.Subtitle>

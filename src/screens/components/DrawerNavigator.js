@@ -21,7 +21,7 @@ const Sidebar = ({ onClose }) => {
   const location = route.params?.location || '';
   const navigation = useNavigation();
   const [superAdmin, setSuperAdmin] = React.useState(null);
-  const {b2b_reminder} = useContext(GeneralFunc);
+  const {b2b_reminder,rdash} = useContext(GeneralFunc);
 
   const handleChangePassword = () => {
     // Handle change password click
@@ -132,6 +132,16 @@ const Sidebar = ({ onClose }) => {
               </View>
             </ListItem.Content>
           </ListItem>
+          <ListItem onPress={() => {
+            rdash();
+          }}>
+            <ListItem.Content>
+              <View style={styles.itemList}>
+                <Icons name="bar-chart" size={20} color='grey' />
+                <Text style={styles.itemText}>Registration Dashboard</Text>
+              </View>
+            </ListItem.Content>
+          </ListItem>
         </ListItem.Accordion>
     )}
         <TouchableOpacity style={styles.item}  onPress={() => {
@@ -163,7 +173,7 @@ const Sidebar = ({ onClose }) => {
         </TouchableOpacity>
         </View>
       </ScrollView>
-      <Text style={{color:'grey'}}>Version 1.1.2</Text>
+      <Text style={{color:'grey'}}>Version 1.1.4</Text>
     </View>
   );
 };

@@ -373,11 +373,11 @@ export const DisplayProvider = ({children}) => {
           console.log(downloadPath);
           const downloadDest = `${downloadPath}/${file_name}`;
           const configOptions = Platform.select({
-            /*ios: {
+            ios: {
               fileCache: true,
               path: downloadDest,
               appendExt: file_name.split('.').pop(),
-            },*/
+            },
             android: {
               fileCache: true,
               path: downloadDest,

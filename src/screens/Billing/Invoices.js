@@ -11,6 +11,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import withAuth from '../withAuth';
 import { BillingFunc } from './BillingFunc';
 import DocumentPicker from 'react-native-document-picker';
+import RNFS from 'react-native-fs';
 
 const Invoices = ({ navigation }) => {
   const { isLoading } = useContext(BasicFunc);
@@ -56,8 +57,9 @@ const Invoices = ({ navigation }) => {
   const handleDocumentSelection = useCallback(async () => {
     try {
       const response = await DocumentPicker.pick({
-        presentationStyle: 'fullScreen',
-        allowMultiSelection: false,
+        //presentationStyle: 'fullScreen',
+        //allowMultiSelection: false,
+        type: [DocumentPicker.types.allFiles],
       });
       setFileResponse(response);
     } catch (err) {

@@ -144,6 +144,24 @@ export const GeneralProvider = ({children}) => {
       });
   };
 
+  const rdash = async () =>{
+    setIsLoading(true);
+    axios
+      .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Registered_dashboard',{
+        customer_guid: '833DF49D303711EE857842010A940003',
+      })
+      .then(response => {
+        if (response.data !== '') {
+          navigation.navigate('RegistrationDashboard', { resData: response.data });
+          setIsLoading(false);
+        }
+      })
+      .catch(e => {
+        console.log('Error:', e);
+        setIsLoading(false);
+      });
+  };
+
 
   return (
     <GeneralFunc.Provider
@@ -154,6 +172,7 @@ export const GeneralProvider = ({children}) => {
         b2b_reminder_byRetailer,
         b2b_reminder_byRetailer_Update,
         b2b_reminder_byRetailer_Delete,
+        rdash,
       }}>
       {children}
       <CustomAlert

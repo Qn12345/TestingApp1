@@ -116,14 +116,14 @@ const DisplayViewSlipPdf = ({route,navigation}) => {
           <ConfirmationModal
             isVisible={isConfirmationVisibleReminder}
             message={'Are you sure you want to Confirm the slip?'}
-            onConfirm={() => {deleteSlip(supplier_guid,invoice_no); setIsConfirmationVisibleReminder(false);}}
+            onConfirm={() => {confirmSlip(supplier_guid,invoice_no); setIsConfirmationVisibleReminder(false);}}
             onCancel={() => {setIsConfirmationVisibleReminder(false);}}
           />
 
           <ConfirmationModal
             isVisible={isConfirmationVisibleDelete}
             message={'Are you sure you want to Delete the slip?'}
-            onConfirm={() => {confirmSlip(supplier_guid,invoice_no); setIsConfirmationVisibleDelete(false);}}
+            onConfirm={() => {deleteSlip(supplier_guid,invoice_no); setIsConfirmationVisibleDelete(false);}}
             onCancel={() => {setIsConfirmationVisibleDelete(false);}}
           />
 

@@ -17,7 +17,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 
 const ConsignSSListScreen = () => {
   const { isLoading } = useContext(BasicFunc);
-  const {consignListPdf,updateInvNo,generateEInv} = useContext(ConsignFunc);
+  const {consignListPdf,updateInvNo,generateEInv,viewConsignEinv} = useContext(ConsignFunc);
   const route = useRoute();
   const ListData = route.params?.ListData || [];
   const typeName = route.params?.typeName || '';
@@ -145,7 +145,7 @@ const ConsignSSListScreen = () => {
         </View>
         <View style={styles.buttonContainerGenerate}>
         {ListData.show_e_invoice === "1" && (
-          <TouchableOpacity onPress={() => {  }} style={[styles.cancelButton,{backgroundColor:COLORS.Blue}]}>
+          <TouchableOpacity onPress={() => { viewConsignEinv(Asup_doc_no,ListData.consignment_sales_statement_header[0].supcus_code,''); }} style={[styles.cancelButton,{backgroundColor:COLORS.Blue}]}>
             <Icon name="folder" size={23} color='white'style={{paddingRight:10,}} />
             <Text style={styles.buttonText}>View E Invoice</Text>
           </TouchableOpacity>
@@ -266,7 +266,6 @@ const ConsignSSListScreen = () => {
                           }
                           else
                           {
-                            //not yet try
                             updateInvNo(period_code,Asup_doc_no,sInvDate,ListData.consignment_sales_statement_header[0].supcus_code,ListData.consignment_sales_statement_header[0].date_trans);
                           }
 
@@ -307,7 +306,8 @@ const ConsignSSListScreen = () => {
           <ConfirmationModal
             isVisible={isConfirmationVisibleReminder}
             message={`Are you sure you want to Generate E Invoice?`}
-            onConfirm={() => {generateEInv(period_code,Asup_doc_no,sInvDate,ListData.consignment_sales_statement_header[0].supcus_code,ListData.consignment_sales_statement_header[0].date_trans);}}
+            onConfirm={() => {generateEInv(period_code,Asup_doc_no,sInvDate,ListData.consignment_sales_statement_header[0].supcus_code,ListData.consignment_sales_statement_header[0].date_trans);
+              setIsConfirmationVisibleReminder(false);}}
             onCancel={() => {setIsConfirmationVisibleReminder(false);}}
           />
     </View>
