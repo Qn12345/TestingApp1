@@ -34,7 +34,8 @@ export const AccDocFuncProvider = ({children}) => {
   };
 
   const pvvPdf = async (refno,code,supcode,prefix) => {
-    setIsLoading(true); console.log(prefix);
+    setIsLoading(true);
+    console.log(prefix);
 
     const customer_guid = '833DF49D303711EE857842010A940003';
     const user_guid = await AsyncStorage.getItem('user_guid');
@@ -43,9 +44,8 @@ export const AccDocFuncProvider = ({children}) => {
 
     file_name = `${refno}.pdf`;
 
-
     let pdfDocConsign = `https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Get_Pdf/readfile_cloud?refno=${refno}&code=${code}&supcode=${supcode}&customer_guid=${customer_guid}&user_guid=${user_guid}&prefix=${prefix}`;
-    navigation.navigate('DisplayPvvPdf', {file_path:pdfDocConsign,file_name:file_name,refno:refno,typeName:code});
+    navigation.navigate('DisplayPvvPdf', {file_path:pdfDocConsign,file_name:file_name,refno:refno,typeName:code});console.log(pdfDocConsign);
     setIsLoading(false);
 
   };

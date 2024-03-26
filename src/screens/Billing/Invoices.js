@@ -98,7 +98,7 @@ const Invoices = ({ navigation }) => {
                       {item.status}
                     </Text>
                   )}
-                  {item.slip_status !== '' && (
+                  {item.slip_status !== '' || item.upload_button === '1' && (
                     <Text style={[styles.textDN ,{backgroundColor: item.slip_status_color}]}>
                       {item.slip_status}
                     </Text>
@@ -112,14 +112,14 @@ const Invoices = ({ navigation }) => {
                 Incl. Tax
               </ListItem.Subtitle>
               <ListItem.Subtitle style={styles.moreInfo}>
-              {item.slip_status === '' && (
+              {item.upload_button === '1' && (
                 <TouchableOpacity onPress={()=>{
                   setIsVisibleUpload(index);
                 }}>
                   <Icons name="file-upload" size={20} color="black"/>
                 </TouchableOpacity>
               )}
-              {(item.slip_status === 'Uploaded' || item.slip_status === 'Processed') && (
+              {(item.slip_status === 'Uploaded' || item.slip_status === 'Processed' || item.upload_button === '0') && (
                 <TouchableOpacity onPress={()=>{
                   setIsVisible(index);
                 }}>

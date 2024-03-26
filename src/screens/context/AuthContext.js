@@ -20,7 +20,7 @@ export const AuthProvider = ({children}) => {
   const [showAlertSend, setShowAlertSend] = useState(false);
   const [alertMessageSend, setAlertMessageSend] = useState('');
   const platform = Platform.OS;//get platform
-  const platformVersion = Platform.Version;// get version
+  const [platformVersion, setplatformVersion] = useState('');
 
   // api used:
   //http://office.panda-eco.com:18243/rest_b2b/index.php/tmg_b2b/Login
@@ -34,6 +34,13 @@ export const AuthProvider = ({children}) => {
     const fcm_token = await messaging().getToken();
     console.log('login');
     console.log(fcm_token);
+    if (platform === 'ios')
+    {
+      setplatformVersion(Platform.osVersion);// get version
+    }
+    else{
+      setplatformVersion(Platform.Version);// get version
+    };
     axios
       .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Login', {
         type: 'app',
@@ -136,7 +143,8 @@ export const AuthProvider = ({children}) => {
           AsyncStorage.removeItem('fcm_token');
           AsyncStorage.removeItem('super_admin');
           setIsLoading(false);
-          navigation.navigate('LoginScreen');
+          checkLoginStatus('','');
+          //navigation.navigate('LoginScreen');
         } else {
           //console.error('Error:', response.data.message);
           // Show a dialog or handle the error case here

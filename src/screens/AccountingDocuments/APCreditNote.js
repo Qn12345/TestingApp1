@@ -66,7 +66,7 @@ const APCreditNote = ({ navigation }) => {
     <TouchableOpacity
             key={index}
             onPress={() => {
-              pvvPdf(item.refno,typeName,item.scode,'');
+              pvvPdf(item.refno,typeName,item.scode,item.prefix);
             }}
             style={styles.item}
           >

@@ -26,7 +26,7 @@ const BillingDashboard = ({ navigation }) => {
   return (
     <View style={styles.container}>
     <Spinner visible={isLoading} />
-      <PublicHeader title={'Accounting Documents Dashboard'}/>
+      <PublicHeader title={'B2B Monthly Billing Invoices Dashboard'}/>
       <ScrollView style={styles.scroll}>
       <View>
         {/* Your ConsignmentDashboard content */}
