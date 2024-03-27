@@ -35,6 +35,7 @@ const Invoices = ({ navigation }) => {
   const [isVisibleUpload, setIsVisibleUpload] = useState(null);
   const [fileResponse, setFileResponse] = useState([]);
   const [remarkInput, onRemarkInput] = useState('');
+  const user_group = route.params?.user_group || '';
 
   const filteredPVData = PVData.filter((pv) =>
     pv.supplier_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -98,7 +99,7 @@ const Invoices = ({ navigation }) => {
                       {item.status}
                     </Text>
                   )}
-                  {item.slip_status !== '' || item.upload_button === '1' && (
+                  {(user_group === '3379ECDBDB0711E7B504A81E8453CCF0' && item.slip_status !== '' || item.upload_button === '0') && (
                     <Text style={[styles.textDN ,{backgroundColor: item.slip_status_color}]}>
                       {item.slip_status}
                     </Text>

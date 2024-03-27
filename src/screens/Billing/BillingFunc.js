@@ -30,6 +30,7 @@ export const BillingFuncProvider = ({children}) => {
     {
       supplier_guid = '';
     }
+    const user_group = await AsyncStorage.getItem('super_admin');
     axios
       .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Monthly_billing_invoices_list', {
         user_guid: await AsyncStorage.getItem('user_guid'),
@@ -45,7 +46,7 @@ export const BillingFuncProvider = ({children}) => {
           Alert.alert('No Data');
           setIsLoading(false);
         } else {
-            navigation.navigate('Invoices', { DocData: response.data, typeName:type, titleName:'Invoices',location:location,ishq:ishq,supplier_guid:supplier_guid,period_code:period_code});
+            navigation.navigate('Invoices', { DocData: response.data, typeName:type, titleName:'Invoices',location:location,ishq:ishq,supplier_guid:supplier_guid,period_code:period_code,user_group:user_group});
             setIsLoading(false);
         }
       })
