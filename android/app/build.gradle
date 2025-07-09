@@ -80,8 +80,8 @@ android {
         applicationId "com.Tmgb2bxBridgeapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
-        versionName "1.1.5"
+        versionCode 19
+        versionName "1.1.9"
         resConfigs "en", "fr"
     }
     signingConfigs {

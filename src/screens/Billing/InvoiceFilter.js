@@ -106,24 +106,6 @@ const InvoiceFilter = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Period Code</Text>
-          <Dropdown
-            style={styles.DropOut}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.placeholderStyle}
-            labelField="label"
-            valueField="value"
-            placeholder={'Select a Period Code'}
-            data={generateperiod_code()}
-            value={speriod_code}
-            containerStyle={styles.dropdownContainer}
-            dropdownPosition={-4} // Adjust as needed
-            onChange={(value) => setperiod_code(value)}
-            itemTextStyle={{color:COLORS.Black}}
-          />
-        </View>
-
 
         {/* Buttons for Reset and Apply */}
         <View style={styles.buttonContainer}>

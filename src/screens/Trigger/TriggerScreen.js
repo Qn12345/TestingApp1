@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   tabViewItem: {
     backgroundColor: COLORS.Grey,
-    width:"100%",
+    width:'100%',
     paddingTop:5,
   },
   scroll: {

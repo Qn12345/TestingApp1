@@ -45,7 +45,7 @@ const Sidebar = ({ onClose }) => {
         </View>
       <Divider width={2} />
       <View style={styles.containerDown}>
-        <TouchableOpacity style={styles.item} onPress={() => { navigation.navigate('ChangePasswordScreen'); }}>
+        <TouchableOpacity style={styles.item} onPress={() => { onClose(); navigation.navigate('ChangePasswordScreen'); }}>
           <IconFoundation name="key" size={20} color='grey' />
           <Text style={styles.itemText}>Change Password</Text>
         </TouchableOpacity>
@@ -70,7 +70,7 @@ const Sidebar = ({ onClose }) => {
           <Text style={styles.itemText}>{location}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.item} onPress={() => { navigation.navigate('ContactScreen'); }}>
+        <TouchableOpacity style={styles.item} onPress={() => { onClose(); navigation.navigate('ContactScreen'); }}>
           <Icons name="phone" size={20}color='grey' />
           <Text style={styles.itemText}>Contact Us</Text>
         </TouchableOpacity>
@@ -123,6 +123,7 @@ const Sidebar = ({ onClose }) => {
           </ListItem>
           */}
           <ListItem onPress={() => {
+            onClose();
             b2b_reminder();
           }}>
             <ListItem.Content>
@@ -133,6 +134,7 @@ const Sidebar = ({ onClose }) => {
             </ListItem.Content>
           </ListItem>
           <ListItem onPress={() => {
+            onClose();
             rdash();
           }}>
             <ListItem.Content>
@@ -156,6 +158,7 @@ const Sidebar = ({ onClose }) => {
               {
                 text: 'Logout',
                 onPress: async () => {
+                    onClose();
                     logout();
                 },
               },
@@ -173,7 +176,7 @@ const Sidebar = ({ onClose }) => {
         </TouchableOpacity>
         </View>
       </ScrollView>
-      <Text style={{color:'grey'}}>Version 1.1.6</Text>
+      <Text style={{color:'grey'}}>Version 1.1.9</Text>
     </View>
   );
 };

@@ -36,10 +36,10 @@ export const AuthProvider = ({children}) => {
     console.log(fcm_token);
     if (platform === 'ios')
     {
-      setplatformVersion(Platform.osVersion);// get version
+      setplatformVersion('1.1.9');// get version
     }
     else{
-      setplatformVersion(Platform.Version);// get version
+      setplatformVersion('1.1.9');// get version
     };
     axios
       .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/Login', {
@@ -143,8 +143,8 @@ export const AuthProvider = ({children}) => {
           AsyncStorage.removeItem('fcm_token');
           AsyncStorage.removeItem('super_admin');
           setIsLoading(false);
-          checkLoginStatus('','');
-          //navigation.navigate('LoginScreen');
+          //checkLoginStatus('','');
+          navigation.navigate('LoginScreen');
         } else {
           //console.error('Error:', response.data.message);
           // Show a dialog or handle the error case here
@@ -171,17 +171,27 @@ export const AuthProvider = ({children}) => {
             Alert.alert('No Data');
             setIsLoading(false);
           } else {
-            const branchDataArray = Object.values(response.data.get_branch);
-            setIsLoading(false);
-            navigation.navigate('WelcomeScreen',{OutletData:branchDataArray,
-                      UserName:response.data.user_name,
-                      overdue:response.data.reminder_overdue_payment,
-                      force_logout:response.data.force_logout});
+            axios
+            .post('https://apitmg.xbridge.my/rest_b2b/index.php/tmg_b2b/General_list/announcement', {
+              customer_guid: '833DF49D303711EE857842010A940003',
+            })
+            .then(responseA=>{
+              if (responseA.data !== '')
+              {
+                const branchDataArray = Object.values(response.data.get_branch);
+                setIsLoading(false);
+                navigation.navigate('WelcomeScreen',{OutletData:branchDataArray,
+                          UserName:response.data.user_name,
+                          overdue:response.data.reminder_overdue_payment,
+                          force_logout:response.data.force_logout,
+                        annoucement:responseA.data.list});
+              }
+            })
           }
         }
         else if (response.data.force_logout === '1'){
           navigation.navigate('WelcomeScreen',{overdue:response.data.reminder_overdue_payment,
-            force_logout:response.data.force_logout});
+            force_logout:response.data.force_logout,annoucement:response.data.check_announcement_acknowledgement});
         }
 
       })

@@ -1,18 +1,20 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
+import React, { useRef, useContext, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
 import { COLORS, FONTSIZE } from './theme/themes';
 import { AuthContext } from './context/AuthContext';
 import LogoutHeader from './components/LogoutHeader';
 import Icon from 'react-native-vector-icons/Ionicons';
-import withAuth from './withAuth';
 import { useFocusEffect, useRoute } from '@react-navigation/native'; // Import useFocusEffect
 import HTML from 'react-native-render-html';
 import { Overlay } from '@rneui/themed';
+import { Divider, color } from '@rneui/base';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const WelcomeScreen = ({ navigation }) => {
   const { getOutlet } = useContext(AuthContext);
   const route = useRoute();
   const OutletData = route.params?.OutletData || [];
+  const annoucement = route.params?.annoucement || [];
   const OverDue = route.params?.overdue || '';
   const force_logout = route.params?.force_logout || '';
   const source = { html: OverDue };
@@ -20,11 +22,12 @@ const WelcomeScreen = ({ navigation }) => {
   const htmlStyles = {
     body: { color: COLORS.Black },
   };
+  const keyExtractor = (item, index) => index.toString();
+  const flatListRef = useRef();
 
   const toggleOverlay = () => {
     setVisible(!visible);
   };
-
   // Use useFocusEffect to trigger the overlay visibility when returning to the screen
   useFocusEffect(
     React.useCallback(() => {
@@ -37,12 +40,44 @@ const WelcomeScreen = ({ navigation }) => {
     }, [])
   );
 
+  const renderersProps = {
+    img: {
+      enableExperimentalPercentWidth: true
+    }
+  };  
+
+  const announcementData = ({ item, index }) => (
+    <View style={{width:'95%',borderColor:COLORS.LightGrey,backgroundColor:'#e1e3e6',borderRadius:10,padding:15,margin:10}}>
+        <Text style={{color:'black',fontSize:FONTSIZE.size_16,fontWeight:'bold'}}>{item.title}</Text>
+        <Text style={{color:'black',fontSize:FONTSIZE.size_14}}>{item.publish_at}</Text>
+        <Divider width={1} color='grey' style={{ marginVertical: 10 }} />
+      <HTML
+        contentWidth={350}
+        source={{ html: item.content }}
+        tagsStyles={htmlStyles}
+        renderersProps={renderersProps}
+      />
+      <View style={{paddingBottom:10}}><Text> </Text></View>
+    </View>
+  );
+
   return (
-    <View style={styles.container}>
-      <LogoutHeader title={''} />
+    <SafeAreaView style={styles.safeArea}>
+      <LogoutHeader title={'Announcement'} />
       <View style={{ height: '80%', justifyContent: 'center', alignItems: 'center' }}>
+      {(annoucement.length <= 0 || annoucement === null) ? (
         <Text style={{ color: COLORS.Grey }}> Welcome Back</Text>
-        {(OverDue.includes('Blocked')) && (
+      ) : (
+        <View>
+        <FlatList
+          ref={flatListRef}
+          data={annoucement}
+          renderItem={announcementData}
+          keyExtractor={keyExtractor}
+        />
+        </View>
+      )}
+        {(OverDue.includes('BLOCKED')) && (
           <View style={styles.ModelView}>
             <Overlay style={styles.overlay} isVisible={visible}>
               <View style={styles.ModalContainer}>
@@ -62,7 +97,7 @@ const WelcomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        {(OverDue.includes('Warning')) && (
+        {(OverDue.includes('LAST REMINDER')) && (
           <View style={styles.ModelView}>
             <Overlay style={styles.overlay} isVisible={visible}>
               <View style={styles.ModalContainer}>
@@ -86,7 +121,7 @@ const WelcomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        {(OverDue.includes('Gentle Reminder')) && (
+        {(OverDue.includes('Gentle REMINDER')) && (
           <View style={styles.ModelView}>
             <Overlay style={styles.overlay} isVisible={visible}>
               <View style={styles.ModalContainer}>
@@ -149,7 +184,7 @@ const WelcomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -200,4 +235,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withAuth(WelcomeScreen);
+export default WelcomeScreen;

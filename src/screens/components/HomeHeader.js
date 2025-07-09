@@ -8,6 +8,7 @@ import { COLORS, FONTFAMILY, FONTSIZE } from '../theme/themes';
 import { Overlay } from '@rneui/themed'; // Import Overlay
 import {AuthContext} from '../context/AuthContext';
 import { useRoute } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CustomHeader = () => {
   const navigation = useNavigation();
@@ -30,7 +31,7 @@ const CustomHeader = () => {
   );
 
   return (
-    <View style={styles.header}>
+    <SafeAreaView style={styles.header}>
       <TouchableOpacity onPress={toggleSidebar} style={styles.menuButton}>
         <Icon name="menu" size={23} color="white" />
       </TouchableOpacity>
@@ -46,7 +47,7 @@ const CustomHeader = () => {
       >
         <Sidebar onClose={closeSidebar} />
       </Overlay>
-    </View>
+    </SafeAreaView>
   );
 };
 

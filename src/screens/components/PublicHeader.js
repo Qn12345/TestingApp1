@@ -3,13 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Import the useNavigation hook
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, FONTFAMILY, FONTSIZE } from '../theme/themes';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PublicHeader = ({title}) => {
   const navigation = useNavigation(); // Initialize the navigation object
 
   return (
-    <View style={styles.header}>
+    <SafeAreaView style={styles.header}>
       <TouchableOpacity onPress={() => {
             navigation.goBack();
             }}
@@ -19,7 +19,7 @@ const PublicHeader = ({title}) => {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{title}</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

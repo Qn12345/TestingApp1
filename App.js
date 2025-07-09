@@ -74,6 +74,7 @@ import InvoiceFilter from './src/screens/Billing/InvoiceFilter';
 import DisplayInvPdf from './src/screens/Billing/DisplayInvPdf';
 import DisplayViewSlipPdf from './src/screens/Billing/DisplayViewSlipPdf';
 import RegistrationDashboard from './src/screens/RegistredDashboard/RegistrationDashboard';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 PushNotification.createChannel(
   {
@@ -88,6 +89,7 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+    // <SafeAreaProvider>
     <NavigationContainer>
     <BasicProvider>
       <AuthProvider>
@@ -168,6 +170,7 @@ function App() {
       </AuthProvider>
       </BasicProvider>
     </NavigationContainer>
+    // </SafeAreaProvider>
   );
 }
 

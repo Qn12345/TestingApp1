@@ -23,8 +23,8 @@ const DisplayDIPdf = ({route,navigation}) => {
         <View style={styles.container}>
           <Spinner visible={isLoading} />
           <PublicHeader title={`${typeName}: ${refNo}`} />
-          <View style={styles.container2}> 
-  
+          <View style={styles.container2}>
+
             <TouchableOpacity style={styles.DownloadBtn} onPress={() => { handleDownload(file_path, file_name); }}>
               <Icon name="download" size={25} color={COLORS.White} />
             </TouchableOpacity>

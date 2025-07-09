@@ -39,7 +39,29 @@ const ContactScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.Content1}>
+          <Text style={styles.Title}>Office</Text>
+          <View style={styles.infomation}>
+            <AntDesign name="phone" size={20}color='black' />
+            <Text style={styles.details2}>Call: </Text>
+            <View style={styles.infomationBlue}>
+              <TouchableOpacity onPress={() => makePhoneCall('+062336260')}>
+                <Text style={styles.bluedetails}>+062336260</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.Content1}>
           <Text style={styles.Title}>Registration</Text>
+          <View style={styles.infomation}>
+            <AntDesign name="phone" size={20}color='black' />
+            <Text style={styles.details2}>Call: </Text>
+            <View style={styles.infomationBlue}>
+              <TouchableOpacity onPress={() => makePhoneCall('+062336221')}>
+                <Text style={styles.bluedetails}>+062336221</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={styles.infomation}>
             <AntDesign name="phone" size={20}color='black' />
             <Text style={styles.details2}>Call: </Text>
@@ -83,6 +105,19 @@ const ContactScreen = ({ navigation }) => {
             <AntDesign name="phone" size={20}color='black' />
             <Text style={styles.details2}>Call: </Text>
             <View style={styles.infomationBlue}>
+              <TouchableOpacity onPress={() => makePhoneCall('+062336211')}>
+                <Text style={styles.bluedetails}>+062336211</Text>
+              </TouchableOpacity>
+              <Text style={styles.details2}>/</Text>
+              <TouchableOpacity onPress={() => makePhoneCall('+062336212')}>
+                <Text style={styles.bluedetails}>+062336212</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.infomation}>
+            <AntDesign name="phone" size={20}color='black' />
+            <Text style={styles.details2}>Call: </Text>
+            <View style={styles.infomationBlue}>
               <TouchableOpacity onPress={() => makePhoneCall('+60177451185')}>
                 <Text style={styles.bluedetails}>+60177451185</Text>
               </TouchableOpacity>
@@ -118,6 +153,19 @@ const ContactScreen = ({ navigation }) => {
 
         <View style={styles.Content1}>
           <Text style={styles.Title}>Billing & Payment</Text>
+          <View style={styles.infomation}>
+            <AntDesign name="phone" size={20}color='black' />
+            <Text style={styles.details2}>Call: </Text>
+            <View style={styles.infomationBlue}>
+              <TouchableOpacity onPress={() => makePhoneCall('+062336231')}>
+                <Text style={styles.bluedetails}>+062336231</Text>
+              </TouchableOpacity>
+              <Text style={styles.details2}>/</Text>
+              <TouchableOpacity onPress={() => makePhoneCall('+062336233')}>
+                <Text style={styles.bluedetails}>+062336233</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={styles.infomation}>
             <AntDesign name="phone" size={20}color='black' />
             <Text style={styles.details2}>Call: </Text>
